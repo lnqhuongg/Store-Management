@@ -24,3 +24,30 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.asideStyle {
+  width: 17%;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background-color: #333;
+}
+
+.sticky-section {
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  background-color: #ededed;
+  box-sizing: border-box;  
+}
+
+.sticky-section .children {
+  width: 80%;
+  line-height: 24px;
+  padding: 20px 150px 20px 10px;
+}
+
+.list-styled{
+  padding-left: 5px;
+  list-style-type: none;
+}

@@ -1,0 +1,16 @@
+export interface RouteItem {
+    name: string;
+    path: string;
+}
+
+export const adminRoutes: RouteItem[] = [
+    { name: 'Quản lý sản phẩm', path: '/admin/SanPham' },
+    { name: 'Quản lý loại sản phẩm', path: '/admin/LoaiSanPham' },
+    { name: 'Quản lý nhà cung cấp', path: '/admin/NCC' },
+    { name: 'Quản lý Tài khoản nhân viên', path: '/admin/NhanVien' },
+    { name: 'Quản lý Thông tin khách hàng', path: '/admin/KhachHang' },
+    { name: 'Quản lý Mã giảm giá', path: '/admin/MGG' },
+    { name: 'Quản lý Đơn hàng', path: '/admin/DonHang' },
+    { name: 'Quản lý Phiếu nhập', path: '/admin/PhieuNhap' },
+    { name: 'Thông kê doanh thu', path: '/admin/ThongKe' },
+];
