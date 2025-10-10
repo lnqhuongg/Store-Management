@@ -8,7 +8,7 @@ import PaginationComponent from "@/app/components/Pagination/Pagination";
 
 
 export default function LoaiSanPham() {
-    // header cho table
+    // header cho table Loai san pham (thay doi header neu la muc quan ly khac)
     const columns = ['Mã loại', 'Tên loại sản phẩm'];
     const dataKeys = ['id', 'tenLoai'];
     // data mau~

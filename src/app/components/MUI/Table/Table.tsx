@@ -1,6 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { Table } from 'react-bootstrap';
+import ButtonEdit from '@/app/components/MUI/Button/ButtonEdit';
+import ButtonDelete from '@/app/components/MUI/Button/ButtonDelete';
 
 interface TableComponentProps {
   columns: string[];      // Tên các cột hiển thị
@@ -45,14 +47,12 @@ export default function TableComponent({
                     {editLink && (
                       <Link
                         href={`${editLink}/${item[dataKeys[0]]}`}
-                        className="btn btn-sm btn-warning me-2"
+                        className=""
                       >
-                        Sửa
+                        <ButtonEdit />
                       </Link>
                     )}
-                    <button className="btn btn-sm btn-danger">
-                      Xóa
-                    </button>
+                    <ButtonDelete />
                   </td>
                 )}
               </tr>
