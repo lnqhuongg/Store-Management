@@ -1,0 +1,72 @@
+'use client';
+import Link from 'next/link';
+import { Table } from 'react-bootstrap';
+import ButtonEdit from '@/app/components/MUI/Button/ButtonEdit';
+import ButtonDelete from '@/app/components/MUI/Button/ButtonDelete';
+import ButtonDetail from '@/app/components/MUI/Button/ButtonDetail';
+
+interface TableComponentProps {
+  columns: string[];      // Tên các cột hiển thị
+  dataKeys: string[];     // Key tương ứng trong dữ liệu
+  data: any[];            // Mảng dữ liệu thực tế --- có data mới dùng (hoặc tạo data mẫu demo)
+  editLink?: string;      // nút edit
+  showActions?: boolean;  // Có hiển thị cột hành động không
+  onEdit?: (id: any) => void;
+  onDelete?: (id: any) => void; // có thực hiện hành động bấm nút edit hay ko
+  onDetail?: (id: any) => void;
+}
+
+export default function DonHangTableComponent({
+  columns,
+  dataKeys,
+  data,
+  editLink,
+  showActions = true,
+  onEdit,
+  onDelete,
+  onDetail
+}: TableComponentProps) {
+
+  return (
+    <div className="table-responsive mt-4 mb-4">
+      <Table bordered hover className="align-middle text-center">
+        <thead className="table-dark">
+          <tr>
+            {columns.map((col, index) => (
+              <th key={index}>{col}</th>
+            ))}
+            {showActions && <th>Tùy chỉnh</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {/* nếu có data */}
+          {data && data.length > 0 ? (
+            data.map((item, idx) => (
+
+              <tr key={idx}>
+                {dataKeys.map((key, i) => (
+                  <td key={i}>{item[key]}</td>
+                ))}
+
+                {/* có hành động thêm / xóa / sửa  */}
+                {showActions && (
+                  <td>
+                    <ButtonDetail onClick={() => onDetail?.(item)} />
+                    {/* <ButtonEdit onClick={() => onEdit?.(item)} />  */}
+                    {/* <ButtonDelete onClick={() => onDelete?.(item)} /> */}
+                  </td>
+                )}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length + (showActions ? 1 : 0)}>
+                Không có dữ liệu...
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+    </div>
+  );
+}
