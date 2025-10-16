@@ -12,7 +12,6 @@ interface ModalFormProps {
 
 export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData }: ModalFormProps) {
     const [formData, setFormData] = useState({ id: '', tenSP: '', loaiSP: '', ncc: '', tonKho: '', gia: '', barcode: ''});
-    console.log('data modal sanpham: ', SanPhamData)
     // Nếu là edit thì khi mở modal, nạp sẵn dữ liệu vào form
     useEffect(() => {
         if (mode === "edit" && SanPhamData) {
@@ -62,11 +61,15 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData 
                             {mode == 'edit' ? (
                                 <Form.Group className="mb-3">
                                     <Form.Label>Tên sản phẩm</Form.Label>
-                                    <Form.Control
+                                    {/* <Form.Control
                                         type="text"
                                         value={formData.tenSP}
                                         onChange={(e) => setFormData({ ...formData, tenSP: e.target.value })}
-                                    />
+                                    /> */}
+                                    <div className="input-group">
+                                        <input type="text" className="form-control" aria-label="Dollar amount (with dot and two decimal places)"/>
+                                        <span className="input-group-text">{SanPhamData.unit}</span>
+                                    </div>
                                 </Form.Group>
                             ): (
                                 <Form.Group className="mb-3">
