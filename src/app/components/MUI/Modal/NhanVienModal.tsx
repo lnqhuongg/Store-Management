@@ -34,7 +34,7 @@ export default function NhanVienModal({ show, handleClose, mode, nhanVienData, o
     // Nếu là edit thì khi mở modal, nạp sẵn dữ liệu vào form
     useEffect(() => {
         if (mode === 'edit' && nhanVienData) {
-            setFormData(nhanVienData);
+            setFormData(nhanVienData); // Nạp dữ liệu từ nhanVienData
         } else {
             setFormData({
                 id: Math.floor(Math.random() * 1000), // Tạo ID ngẫu nhiên khi thêm mới
@@ -46,7 +46,7 @@ export default function NhanVienModal({ show, handleClose, mode, nhanVienData, o
         }
     }, [mode, nhanVienData]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
@@ -133,7 +133,7 @@ export default function NhanVienModal({ show, handleClose, mode, nhanVienData, o
                         <Form.Group className="mb-3">
                             <Form.Label>Trạng thái</Form.Label>
                             <Form.Select
-                                value={formData.trangThai}
+                                value={formData.trangThai} // Hiển thị trạng thái hiện tại
                                 name="trangThai"
                                 onChange={handleChange}
                             >

@@ -23,11 +23,13 @@ export default function NhanVien() {
 
     const [showModal, setShowModal] = useState(false);
     const [mode, setMode] = useState<'add' | 'edit'>('add');
-    const [selectedNhanVien, setSelectedNhanVien] = useState(null);
+    const [selectedNhanVien, setSelectedNhanVien] = useState<
+        { id: number; tenNhanVien: string; email: string; chucVu: string; trangThai: string } | undefined
+    >(undefined);
 
     const handleAdd = () => {
         setMode('add');
-        setSelectedNhanVien(null);
+        setSelectedNhanVien(undefined); // Sử dụng undefined thay vì null
         setShowModal(true);
     };
 
@@ -75,7 +77,7 @@ export default function NhanVien() {
                                 </span>
                             ),
                         }))}
-                        onEdit={(item) => handleEdit(item)}
+                        onEdit={(item) => handleEdit(item)} // Chỉ giữ nút chỉnh sửa
                     />
                 </div>
                 <div>
