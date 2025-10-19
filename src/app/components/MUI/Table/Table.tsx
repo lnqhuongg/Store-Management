@@ -1,18 +1,16 @@
 'use client';
-import Link from 'next/link';
 import { Table } from 'react-bootstrap';
 import ButtonEdit from '@/app/components/MUI/Button/ButtonEdit';
 import ButtonDelete from '@/app/components/MUI/Button/ButtonDelete';
 
-
 interface TableComponentProps {
   columns: string[];      // Tên các cột hiển thị
   dataKeys: string[];     // Key tương ứng trong dữ liệu
-  data: any[];            // Mảng dữ liệu thực tế --- có data mới dùng (hoặc tạo data mẫu demo)
-  editLink?: string;      // nút edit
+  data: any[];            // Mảng dữ liệu thực tế
+  editLink?: string;      // Link chuyển đến khi bấm edit (nếu có)
   showActions?: boolean;  // Có hiển thị cột hành động không
-  onEdit?: (id: any) => void;
-  onDelete?: (id: any) => void; // có thực hiện hành động bấm nút edit hay ko
+  onEdit?: (item: any) => void;
+  onDelete?: (item: any) => void;
 }
 
 export default function TableComponent({
@@ -24,7 +22,6 @@ export default function TableComponent({
   onEdit,
   onDelete,
 }: TableComponentProps) {
-
   return (
     <div className="table-responsive mt-4 mb-4">
       <Table bordered hover className="align-middle text-center">
@@ -33,24 +30,24 @@ export default function TableComponent({
             {columns.map((col, index) => (
               <th key={index}>{col}</th>
             ))}
-            {showActions && <th>Tùy chỉnh</th>}
+            {showActions && (onEdit || onDelete) && <th>Tùy chỉnh</th>}
           </tr>
         </thead>
         <tbody>
-          {/* nếu có data */}
           {data && data.length > 0 ? (
             data.map((item, idx) => (
-
               <tr key={idx}>
                 {dataKeys.map((key, i) => (
                   <td key={i}>{item[key]}</td>
                 ))}
 
-                {/* có hành động thêm / xóa / sửa  */}
-                {showActions && (
+                {showActions && (onEdit || onDelete) && (
                   <td>
-                    <ButtonEdit onClick={() => onEdit?.(item)} />  {/* 👈 gọi cha, truyền item */}
-                    <ButtonDelete onClick={() => onDelete?.(item)} />
+                    {/* Hiện nút sửa nếu có truyền onEdit */}
+                    {onEdit && <ButtonEdit onClick={() => onEdit(item)} />}
+
+                    {/* Hiện nút xóa nếu có truyền onDelete */}
+                    {onDelete && <ButtonDelete onClick={() => onDelete(item)} />}
                   </td>
                 )}
               </tr>

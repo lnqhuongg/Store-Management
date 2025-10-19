@@ -5,27 +5,50 @@ import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
 import SearchInput from "@/app/components/MUI/Input/SearchInput";
 import TableComponent from "@/app/components/MUI/Table/Table";
 import PaginationComponent from "@/app/components/Pagination/Pagination";
+import KhachHangModal from "@/app/components/MUI/Modal/KhachHangModal";
 
 export default function KhachHang() {
-    // header cho table Thông tin khách hàng
+    // Header cho bảng Khách hàng
     const columns = ['Mã khách hàng', 'Tên khách hàng', 'Email', 'Số điện thoại'];
     const dataKeys = ['id', 'tenKhachHang', 'email', 'soDienThoai'];
-    // data mẫu
+
+    // Dữ liệu mẫu
     const data = [
         { id: 1, tenKhachHang: 'Nguyễn Văn C', email: 'nguyenvanc@example.com', soDienThoai: '0123456789' },
         { id: 2, tenKhachHang: 'Lê Thị D', email: 'lethid@example.com', soDienThoai: '0987654321' },
     ];
 
-    // data mẫu chạy thử phân trang
+    // State phân trang
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 4;
+    const totalPages = 5;
+
+    // ------------------------------- xử lý modal thêm/sửa khách hàng -------------------------------
+
+    const [showModal, setShowModal] = useState(false);
+    const [mode, setMode] = useState<'add' | 'edit'>('add');
+    const [selectedIndex, setSelectedIndex] = useState(null);
+
+    // Khi bấm nút "Thêm mới"
+    const handleAdd = () => {
+        setMode('add');
+        setSelectedIndex(null);
+        setShowModal(true);
+    };
+
+    // Khi bấm nút "Sửa"
+    const handleEdit = (khachHang: any) => {
+        setMode('edit');
+        setSelectedIndex(khachHang);
+        setShowModal(true);
+    };
 
     return (
         <section>
             <h4>Quản lý Thông tin khách hàng</h4>
             <div className="khachhang py-4">
                 <div>
-                    <ButtonAdd />
+                    {/* Gọi modal thêm khách hàng */}
+                    <ButtonAdd onClick={handleAdd} />
                 </div>
                 <div>
                     <SearchInput />
@@ -35,7 +58,7 @@ export default function KhachHang() {
                         columns={columns}
                         dataKeys={dataKeys}
                         data={data}
-                        editLink="/admin/khach-hang/edit"
+                        onEdit={(item) => handleEdit(item)}  // chỉ có sửa
                     />
                 </div>
                 <div>
@@ -46,6 +69,14 @@ export default function KhachHang() {
                     />
                 </div>
             </div>
+
+            {/* Modal thêm / sửa khách hàng */}
+            <KhachHangModal
+                show={showModal}
+                handleClose={() => setShowModal(false)}
+                mode={mode}
+                KhachHangData={selectedIndex}
+            />
         </section>
     );
 }
