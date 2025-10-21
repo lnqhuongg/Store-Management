@@ -1,0 +1,17 @@
+.iconFilterPrice {
+    width: 22px;
+    height: 22px;
+}
+
+.productImg {
+    width: 130px;
+    height: 130px;
+}
+
+.productTitle {
+    width: 100%; /* hoặc set theo ý muốn */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
