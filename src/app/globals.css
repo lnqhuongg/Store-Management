@@ -44,10 +44,18 @@ body {
 .sticky-section .children {
   width: 80%;
   line-height: 24px;
-  padding: 20px 150px 20px 10px;
+  padding: 20px 80px 20px 10px;
 }
 
 .list-styled{
   padding-left: 5px;
   list-style-type: none;
+} 
+
+.sticky-section .login-page {
+  width: 100%;
+}
+
+ul li {
+    padding-left: 0px;
 }

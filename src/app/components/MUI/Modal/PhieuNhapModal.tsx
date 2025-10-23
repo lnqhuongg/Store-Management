@@ -46,7 +46,7 @@ export default function PhieuNhapModal({show, handleClose, mode, PhieuNhapData} 
                         <Col md={4} className="border-end">
                         <div className="d-flex flex-column align-items-center gap-3">
                             <img
-                            src="/img/sanpham/1.jpg"
+                            src="/sanpham/1.jpg"
                             alt="Sản phẩm"
                             className="rounded shadow-sm"
                             style={{ width: '100%', maxWidth: 200, height: 'auto' }}

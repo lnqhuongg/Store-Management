@@ -60,7 +60,7 @@ export default function SanPham() {
 
     return (
         <section>
-            <h4>Quản lý sản phẩm</h4>
+            <h4>Quản lý Sản phẩm</h4>
             {announce && (
                 <div className="my-3">
                 <Alert
@@ -97,7 +97,6 @@ export default function SanPham() {
                         columns={columns}
                         dataKeys={dataKeys}
                         data={data}
-                        editLink="/admin/san-pham/edit"
                         onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
                         onDelete={(item) => handleDelete(item)}
                     />

@@ -4,7 +4,6 @@ import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
 import SearchInput from "@/app/components/MUI/Input/SearchInput";
 import PhieuNhapModal from "@/app/components/MUI/Modal/PhieuNhapModal";
 import TableComponent from "@/app/components/MUI/Table/Table";
-import TablePhieuNhapComponent from "@/app/components/MUI/Table/TablePhieuNhap";
 import PaginationComponent from "@/app/components/Pagination/Pagination";
 import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
@@ -92,7 +91,7 @@ export default function PhieuNhap() {
     };
     return (
         <section>
-            <h4>Quản lý phiếu nhập</h4>
+            <h4>Quản lý Phiếu nhập</h4>
             {announce && (
                 <div className="my-3">
                 <Alert
@@ -125,12 +124,10 @@ export default function PhieuNhap() {
                 </div>
                 
                 <div>
-                    <TablePhieuNhapComponent
+                    <TableComponent
                         columns={columns}
                         dataKeys={dataKeys}
                         data={data}
-                        editLink="/admin/san-pham/edit"
-                        // onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
                         onDelete={(item) => handleDelete(item)}
                         onDetail={(item) => handleDetail(item)}
                     />
