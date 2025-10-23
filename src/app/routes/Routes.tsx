@@ -14,3 +14,9 @@ export const adminRoutes: RouteItem[] = [
     { name: 'Quản lý Phiếu nhập', path: '/admin/PhieuNhap' },
     { name: 'Thông kê doanh thu', path: '/admin/ThongKe' },
 ];
+
+export const staffRoutes: RouteItem[] = [
+    { name: 'Quét mã vạch', path: '/staff/Barcode' },
+    { name: 'Danh sách Sản phẩm', path: '/staff/SanPham' },
+    { name: 'Danh sách Khách hàng', path: '/staff/KhachHang' },
+];
