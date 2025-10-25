@@ -7,6 +7,13 @@ import PaginationComponent from "@/app/components/Pagination/Pagination";
 import SanPhamModalForm from "@/app/components/MUI/Modal/SanPhamModal";
 import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
+import btnPriceLowtoHigh from "../../../../public/icons/priceLowtoHigh.png";
+import btnPriceHighToLow from "../../../../public/icons/priceHightoLow.png";
+
+// import styleSP from "./SanPham.module.css"
+import styleSP from "../../staff/SanPham/SanPham.module.css";
+
+import Image from "next/image";
 
 
 export default function SanPham() {
@@ -73,7 +80,7 @@ export default function SanPham() {
                 </div>
             )}
             <div className="loaisanpham py-4">
-                <div className="d-flex justify-content-start gap-5">
+                <div className="d-flex justify-content-start gap-3">
                     {/* gửi hành showmodal(true) cho button -- mở modal  */}
                     <ButtonAdd onClick={handleAdd} />
                     <div className="w-40">
@@ -84,8 +91,21 @@ export default function SanPham() {
                             <option value="3">Three</option>
                         </select>
                     </div>
+                    <div className="w-40">
+                        <select className="form-select" aria-label="Default select example">
+                            <option >Lọc theo nhà cung cấp</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
                     <button className="bg-white p-1 rounded" onClick={handleToggleIcon}>
-                        <img src={isIncrease ? "/icons/increase.png" : "/icons/decrease.png"} alt="" className="h-8 w-8" />
+                        {/* <img src={isIncrease ? "/icons/increase.png" : "/icons/decrease.png"} alt="" className="h-8 w-8" /> */}
+                        <Image
+                            src={isIncrease ? btnPriceLowtoHigh : btnPriceHighToLow}
+                            alt="isIncrease"
+                            className={`${styleSP.iconFilterPrice}`}
+                        />
                     </button>
                 </div>
                 <div>
