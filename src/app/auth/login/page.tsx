@@ -3,6 +3,27 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+export interface Account {
+    id: string;
+    username: string;
+    password: string;
+    role: "admin" | "staff";
+}
+
+const demoAdminAccount: Account = {
+    id: "A001",
+    username: "admin",
+    password: "123",
+    role: "admin",
+};
+
+const demoStaffAccount: Account = {
+    id: "A001",
+    username: "staff",
+    password: "123",
+    role: "staff",
+};
+
 export default function LoginPage() {
     const router = useRouter();
     const [username, setUsername] = useState("");
@@ -22,15 +43,22 @@ export default function LoginPage() {
         // Nếu có lỗi trống thì dừng lại
         if (newErrors.username || newErrors.password) return;
 
-        // 🔐 Giả lập tài khoản đúng
-        const correctUsername = "admin";
-        const correctPassword = "123456";
-
-        if (username !== correctUsername || password !== correctPassword) {
+        // nếu username & password nhập vào trùng với username & password của admin 
+        // chuyển đến trang admin --- này mới là data mẫu, mốt còn duyệt xem role của Account là gì
+        // tương tự cho staff 
+        if (
+            username === demoAdminAccount.username &&
+            password === demoAdminAccount.password
+        ) {
+            router.push("/admin/ThongKe");
+        } else if (
+            username === demoStaffAccount.username &&
+            password === demoStaffAccount.password
+        ) {
+            router.push("/staff");
+        } else {
             setLoginError("Sai tên đăng nhập hoặc mật khẩu!");
             return;
-        } else {
-            router.push("/admin"); // chuyển hướng về trang admin
         }
 
         // Nếu đúng → đăng nhập thành công

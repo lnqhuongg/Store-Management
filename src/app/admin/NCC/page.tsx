@@ -5,17 +5,18 @@ import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
 import SearchInput from "@/app/components/MUI/Input/SearchInput";
 import TableComponent from "@/app/components/MUI/Table/Table";
 import PaginationComponent from "@/app/components/Pagination/Pagination";
-import LoaiSPModal from "@/app/components/MUI/Modal/LoaiSPModal";
+import NCCModal from "@/app/components/MUI/Modal/NCCModal";
 
 
-export default function LoaiSanPham() {
+export default function NhaCungCap() {
     // header cho table Loai san pham (thay doi header neu la muc quan ly khac)
-    const columns = ['Mã loại', 'Tên loại sản phẩm'];
-    const dataKeys = ['id', 'tenLoai'];
+    const columns = ['Mã nhà cung cấp', 'Tên nhà cung cấp', 'SĐT', 'Email', 'Địa chỉ'];
+    const dataKeys = ['id', 'tenNcc', 'sdt', 'email', 'adress'];
     // data mau~
     const data = [
-        { id: 1, tenLoai: 'Áo thun', moTa: 'Chất liệu cotton' },
-        { id: 2, tenLoai: 'Quần jean', moTa: 'Form slim fit' },
+        { id: 1, tenNcc: 'Công ty ABC', sdt: '0909123456' , email: 'abc@gmail.com', adress:'Hà Nội'},
+        { id: 2, tenNcc: 'Công ty XYZ', sdt: '0912123456' , email: 'xyz@gmail.com', adress:'TP HCM'},
+        { id: 3, tenNcc: 'Công ty 123', sdt: '0933123456' , email: '123@gmail.com', adress:'Đà Nẵng'},
     ];
 
     // data mau~ chay thu phan trang
@@ -29,7 +30,7 @@ export default function LoaiSanPham() {
     // typescript - state này chỉ có giá trị là 'add' hoặc 'edit' không có giá trị khác 
     // '<>' là type, kiểu dữ liệu của state - hinh nhu là union type 
     // khởi tạo mode = 'add'
-    const [mode, setMode] = useState<'add' | 'edit'>('add');
+    const [mode, setMode] = useState<'add' | 'edit'>('add') ;
 
     // này để xác định mình bấm edit của thằng nào trong mấy dòng của table
     const [selectedIndex, setSelectedIndex] = useState(null);
@@ -43,21 +44,16 @@ export default function LoaiSanPham() {
 
     // Khi bấm nút sửa
     // kieu du lieu la any - la kieu du lieu gi cung dc, int hay object gi cung duoc, mot' thay = id
-    const handleEdit = (LoaiSP: any) => {
+    const handleEdit = (NCC: any) => {
         setMode('edit');
-        setSelectedIndex(LoaiSP);
+        setSelectedIndex(NCC);
         setShowModal(true);
     };
 
-    // KHI BAM NUT XOA 
-    const handleDelete = (LoaiSP: any) => {
-        setSelectedIndex(LoaiSP);
-        alert('da bam vo button edit');
-    }
 
     return (
         <section>
-            <h4>Quản lý Loại sản phẩm</h4>
+            <h4>Quản lý Nhà cung cấp</h4>
             <div className="loaisanpham py-4">
                 <div>
                     {/* gửi hành showmodal(true) cho button -- mở modal  */}
@@ -72,7 +68,6 @@ export default function LoaiSanPham() {
                         dataKeys={dataKeys}
                         data={data}
                         onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
-                        onDelete={(item) => handleDelete(item)}
                     />
                 </div>
                 <div>
@@ -83,10 +78,10 @@ export default function LoaiSanPham() {
                     />
                 </div>
             </div>
-            <LoaiSPModal show={showModal} 
+            <NCCModal show={showModal} 
                          handleClose={() => setShowModal(false)} 
                          mode={mode}
-                         LoaiSPData={selectedIndex}
+                         NCCData={selectedIndex}
             />
         </section>
         
