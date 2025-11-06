@@ -71,6 +71,7 @@ export default function LoaiSanPham() {
                         columns={columns}
                         dataKeys={dataKeys}
                         data={data}
+                        editLink="/admin/loai-san-pham/edit"
                         onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
                         onDelete={(item) => handleDelete(item)}
                     />

@@ -1,9 +1,11 @@
 'use client';
 import { useState } from 'react';
 
+import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
 import SearchInput from "@/app/components/MUI/Input/SearchInput";
-import DonHangTableComponent from "@/app/components/MUI/Table/Table";
+import DonHangTableComponent from "@/app/components/MUI/Table/DonHangTable";
 import PaginationComponent from "@/app/components/Pagination/Pagination";
+
 import DonHangModal from "@/app/components/MUI/Modal/DonHangModal";
 import ChiTietDHModal from '@/app/components/MUI/Modal/ChiTietDHModal';
 
@@ -313,6 +315,7 @@ export default function DonHang() {
                         columns={columns}
                         dataKeys={dataKeys}
                         data={currentData}
+                        editLink="/admin/don-hang/edit"
                         onDetail={(item) => handleViewDetail(item)}
                         onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
                     />
