@@ -16,7 +16,6 @@ export const adminRoutes: RouteItem[] = [
 ];
 
 export const staffRoutes: RouteItem[] = [
-    { name: 'Quét mã vạch', path: '/staff/Barcode' },
     { name: 'Danh sách Sản phẩm', path: '/staff/SanPham' },
     { name: 'Danh sách Khách hàng', path: '/staff/KhachHang' },
 ];
