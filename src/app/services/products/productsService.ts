@@ -1,0 +1,145 @@
+'use client';
+export async function getAllProducts() {
+    try {
+        const response = await fetch('https://localhost:7107/api/products');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+    }
+}
+export async function getProductById(id: string) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/${id}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error fetching product with id ${id}:`, error);
+        throw error;
+    }   
+}
+export async function createProductRequest(product: FormData) {
+    try {
+        const response = await fetch('https://localhost:7107/api/products', {
+            method: 'POST',
+            // headers: { 'Content-Type': 'application/json' },
+            body: product,
+        });
+        if (!response.ok) {
+            // Lấy thông tin lỗi chi tiết từ backend
+            const errorData = await response.json();
+            console.error('Backend error:', errorData);
+            if (errorData.errors) {
+                Object.keys(errorData.errors).forEach(key => {
+                    console.error(`Field: ${key}, Errors:`, errorData.errors[key]);
+                });
+            }
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error creating product:', error);
+        throw error;
+    }
+}
+export async function updateProductRequest(id: string, product: FormData) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/${id}`, {
+            method: 'PUT',
+            // headers: { 'Content-Type': 'application/json' },
+            body: product,
+        });
+        if (!response.ok) {
+            // Lấy thông tin lỗi chi tiết từ backend
+            const errorData = await response.json();
+            console.error('Backend error:', errorData);
+            throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error updating product with id ${id}:`, error);
+        throw error;
+    }
+}
+export async function deleteProduct(id: string) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/${id}`, {
+            method: 'DELETE',
+        }); 
+        if (!response.ok) {
+            throw new Error(`Error deleting product with id ${id}`);
+        }
+        return true;
+    } catch (error) {
+        console.error(`Error deleting product with id ${id}:`, error);
+        throw error;
+    }
+}
+export async function searchByKeyword(keyword: string) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/search?keyword=${keyword}`, {
+            method: 'GET',
+        }); 
+        if(response.status === 204) {
+            return { dataDTO: [] }; // Trả về mảng rỗng nếu không tìm thấy sản phẩm
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error searching with keyword ${keyword}:`, error);
+        throw error;
+    }
+}
+export async function filterByCategory(categoryID: string) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/category/${categoryID}`, {
+            method: 'GET',
+        }); 
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error filtering by categoryID ${categoryID}:`, error);
+        throw error;
+    }
+}
+export async function filterBySupplier(supplierID: string) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/supplier/${supplierID}`, {
+            method: 'GET',
+        }); 
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error filtering by supplierID ${supplierID}:`, error);
+        throw error;
+    }
+}
+export async function fiterBySortOrder(order: string) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/sort/${order}`, {
+            method: 'GET',
+        }); 
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error filtering by sort order ${order}:`, error);
+        throw error;
+    }
+}
+export async function advancedSearchProducts(categoryID: string, supplierID: string, sortOrder: string, keyword?: string) {
+    try {
+        const res = await fetch(`https://localhost:7107/api/products/advanced_search?supplier_id=${supplierID}&category_id=${categoryID}&order=${sortOrder}&keyword=${keyword}`, {
+            method: 'GET',
+        });
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error('Error in advanced search:', error);
+        throw error;
+    }
+}

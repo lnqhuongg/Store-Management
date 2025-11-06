@@ -14,7 +14,7 @@ interface TableComponentProps {
   onDetail?: (id: any) => void;
 }
 
-export default function TableComponent({
+export default function ProductTableComponent({
   columns,
   dataKeys,
   data,
@@ -28,6 +28,24 @@ export default function TableComponent({
       const cleanKey = key.replace('?', '');
       return current && current[cleanKey] !== undefined ? current[cleanKey] : '';
     }, obj);
+  };
+  const formatPrice = (price: number | string, currency: string = 'VND'): string => {
+        const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+        
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: currency,
+        }).format(numPrice);
+    };
+  const renderCellValue = (columnName: string, key: string, item: any) => {
+    const value = getNestedValue(item, key);
+    
+    // Kiểm tra nếu cột là "Đơn giá" hoặc key chứa "price"
+    if (columnName.toLowerCase().includes('giá') || key.toLowerCase().includes('price')) {
+      return formatPrice(value);
+    }
+    
+    return value;
   };
 
   return (
@@ -48,14 +66,15 @@ export default function TableComponent({
 
               <tr key={idx}>
                 {dataKeys.map((key, i) => (
-                  <td key={i}>{getNestedValue(item, key)}</td>
+                    
+                  <td key={i}>{renderCellValue(columns[i], key, item)}</td>
                 ))}
 
                 {/* có hành động thêm / xóa / sửa  */}
                 {showActions && (
                   <td>
                     <ButtonEdit onClick={() => onEdit?.(item)} />  {/* 👈 gọi cha, truyền item */}
-                    <ButtonDelete onClick={() => onDelete?.(item)} />
+                    {/* <ButtonDelete onClick={() => onDelete?.(item)} /> */}
                   </td>
                 )}
               </tr>

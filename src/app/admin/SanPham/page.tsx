@@ -14,34 +14,49 @@ import btnPriceHighToLow from "../../../../public/icons/priceHightoLow.png";
 import styleSP from "../../staff/SanPham/SanPham.module.css";
 
 import Image from "next/image";
+import { getAllProducts, searchByKeyword } from "@/app/services/products/productsService";
+import UseFetchSanPhamData from "../UseFetchData/UseFetchSanPhamData";
+import SearchInputProducts from "@/app/components/MUI/Input/SearchInputProducts";
+import ProductTableComponent from "@/app/components/MUI/Table/ProductTable";
 
 
 export default function SanPham() {
-    const columns = ['Mã sản phẩm', 'Tên sản phẩm', 'Loại', 'Nhà cung cấp', 'Tồn kho', 'Đơn giá'];
-    const dataKeys = ['id', 'tenSP', 'loaiSP', 'ncc', 'tonKho', 'gia'];
+    const columns = ['Mã sản phẩm', 'Tên sản phẩm', 'Tồn kho', 'Loại', 'Nhà cung cấp', 'Đơn giá'];
+    const dataKeys = ['productID', 'productName', 'stock', 'category.categoryName', 'supplier.name', 'price'];
 
-    const data = [
-        {id : '1', tenSP: 'Áo thun',loaiSP: 'Áo thun', ncc: 'Vinamilk', tonKho: '10', gia: '80000', barcode: 'i4bjkfdrbi', unit: 'chiếc'},
-        {id : '2', tenSP: 'Quần jean', loaiSP: 'Quần jean', ncc: 'TH true milk', tonKho: '10', gia: '150000', barcode: 'sirrfjo4w3', unit: 'chiếc'}
-    ];
+    const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [selectedSupplier, setSelectedSupplier] = useState<string>('');
 
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 5;
+    const [itemsPerPage] = useState(5); 
+    const [totalPages, setTotalPages] = useState(1);
 
     const [showModal, setShowModal] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [mode, setMode] = useState<'add' | 'edit'>('add');
-
-    const [isIncrease, setIsIncrease] = useState(true);
-
-    const [announce, setAnnounce] = useState<null | { type: string; message: string }>(null);
+    const [keyword, setKeyword] = useState('');
+    const [isIncrease, setIsIncrease] = useState('asc');
+    const { data: listProducts, setData: setListProducts, loading, setLoading, announce, setAnnounce, handleSearchByKeyword, createProduct, updateProduct, categories, suppliers, getByCategory, getBySupplier, getBySortOrder, handleAdvancedSearchProducts } = UseFetchSanPhamData();
 
     useEffect(() => {
-        if (announce) {
-        const timer = setTimeout(() => setAnnounce(null), 5000);
-        return () => clearTimeout(timer);
-        }
-    }, [announce]);
+        console.log('Selected Category:', selectedCategory);
+        console.log('Selected Supplier:', selectedSupplier);
+        console.log('Sort Order:', isIncrease);
+        console.log('Keyword:', keyword);
+        console.log('-----------------------------------');
+        setCurrentPage(1);
+        handleAdvancedSearchProducts(selectedCategory, selectedSupplier, isIncrease,keyword);
+    }, [selectedCategory, selectedSupplier, isIncrease, keyword]);
+
+    const handleCategoryChange = (categoryID: string) => {
+        setSelectedCategory(categoryID);
+        // getByCategory(categoryID);
+    };
+
+    const handleSupplierChange = (supplierID: string) => {
+        setSelectedSupplier(supplierID);
+        // getBySupplier(supplierID);
+    };
 
     const handleAdd = () => {
         setMode('add');
@@ -57,13 +72,49 @@ export default function SanPham() {
 
     const handleDelete = (LoaiSP: any) => {
         setSelectedIndex(LoaiSP);
-        // alert('da bam vo button edit');
         setAnnounce({ type: "success", message: "Đã xóa sản phẩm thành công!" });
     }
 
     const handleToggleIcon = () => {
-        setIsIncrease(prev => !prev);
+        setIsIncrease(e => e === 'asc' ? 'desc' : 'asc');
+        // getBySortOrder(isIncrease === 'asc' ? 'desc' : 'asc');
     };
+
+    const handleResetFilter = () => {
+        setSelectedCategory('');
+        setSelectedSupplier('');
+        setIsIncrease('asc');
+        setKeyword('');
+        // handleSearchByKeyword('');
+    };
+
+
+    // fetch data tu service
+
+
+    const getCurrentPageData = () => {
+        if (!listProducts || !Array.isArray(listProducts)) {
+            return [];
+        }
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return listProducts.slice(startIndex, endIndex);
+    };
+
+    useEffect(() => {
+        if (!listProducts || !Array.isArray(listProducts)) {
+            setTotalPages(1);
+        } else if (listProducts.length > 0) {
+            const total = Math.ceil(listProducts.length / itemsPerPage);
+            setTotalPages(total);
+        } else {
+            setTotalPages(1);
+        }
+    }, [listProducts, itemsPerPage]);
+
+    if(loading){
+        return <div>Loading...</div>;
+    }
 
     return (
         <section>
@@ -84,44 +135,70 @@ export default function SanPham() {
                     {/* gửi hành showmodal(true) cho button -- mở modal  */}
                     <ButtonAdd onClick={handleAdd} />
                     <div className="w-40">
-                        <select className="form-select" aria-label="Default select example">
-                            <option >Lọc theo loại</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                        <select 
+                            className="form-select" 
+                            aria-label="Lọc theo loại sản phẩm"
+                            onChange={(e) => handleCategoryChange(e.target.value)}
+                            value={selectedCategory}
+                        >
+                            <option value="">Lọc theo loại</option>
+                            {categories.map((category: any) => (
+                                <option key={category.categoryId} value={category.categoryId}>
+                                    {category.categoryName}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div className="w-40">
-                        <select className="form-select" aria-label="Default select example">
-                            <option >Lọc theo nhà cung cấp</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                        <select 
+                            className="form-select" 
+                            aria-label="Lọc theo nhà cung cấp"
+                            onChange={(e) => handleSupplierChange(e.target.value)}
+                            value={selectedSupplier}
+                        >
+                            <option value="">Lọc theo nhà cung cấp</option>
+                            {suppliers.map((supplier: any) => (
+                                <option key={supplier.supplierId} value={supplier.supplierId}>
+                                    {supplier.name}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <button className="bg-white p-1 rounded" onClick={handleToggleIcon}>
                         {/* <img src={isIncrease ? "/icons/increase.png" : "/icons/decrease.png"} alt="" className="h-8 w-8" /> */}
                         <Image
-                            src={isIncrease ? btnPriceLowtoHigh : btnPriceHighToLow}
-                            alt="isIncrease"
+                            src={isIncrease === 'asc' ? btnPriceLowtoHigh : btnPriceHighToLow}
+                            alt={isIncrease === 'asc' ? "Sắp xếp giá tăng dần" : "Sắp xếp giá giảm dần"}
                             className={`${styleSP.iconFilterPrice}`}
+                            onClick={e => getBySortOrder(isIncrease)}
                         />
                     </button>
+                    {(selectedCategory || selectedSupplier) && (
+                        <button 
+                            className="btn btn-outline-secondary"
+                            onClick={() => {
+                                handleResetFilter();
+                            }}
+                        >
+                            Reset
+                        </button>
+                    )}
                 </div>
                 <div>
-                    <SearchInput />
+                    <SearchInputProducts keyword={keyword} setKeyword={setKeyword} handleSearchByKeyword={handleSearchByKeyword} />
                 </div>
                 
                 <div>
-                    <TableComponent
+                    <ProductTableComponent
                         columns={columns}
                         dataKeys={dataKeys}
-                        data={data}
+                        data={getCurrentPageData()}
                         onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
                         onDelete={(item) => handleDelete(item)}
                     />
                 </div>
                 <div>
+                    
                     <PaginationComponent
                         currentPage={currentPage}
                         totalPages={totalPages}
@@ -133,6 +210,8 @@ export default function SanPham() {
                 show={showModal} 
                 handleClose={() => setShowModal(false)} 
                 mode={mode}
+                createProduct={createProduct}
+                updateProduct={updateProduct}
                 SanPhamData={selectedIndex}
             />
 

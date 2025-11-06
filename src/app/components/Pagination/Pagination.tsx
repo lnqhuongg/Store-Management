@@ -16,7 +16,45 @@ export default function PaginationComponent({
   onPageChange,
 }: PaginationProps) {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
+  const getVisiblePages = () => {
+    const visiblePages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      // Nếu tổng số trang <= 5, hiển thị tất cả
+      for (let i = 1; i <= totalPages; i++) {
+        visiblePages.push(i);
+      }
+    } else {
+      // Nếu tổng số trang > 5, tính toán các trang cần hiển thị
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, currentPage + 2);
+      
+      // Điều chỉnh để luôn hiển thị đủ 5 trang nếu có thể
+      if (currentPage <= 3) {
+        endPage = Math.min(totalPages, maxVisiblePages);
+      } else if (currentPage >= totalPages - 2) {
+        startPage = Math.max(1, totalPages - maxVisiblePages + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        visiblePages.push(i);
+      }
+      
+      // Thêm ellipsis nếu cần
+      if (startPage > 1) {
+        visiblePages.unshift('...');
+        visiblePages.unshift(1);
+      }
+      if (endPage < totalPages) {
+        visiblePages.push('...');
+        visiblePages.push(totalPages);
+      }
+    }
+    
+    return visiblePages;
+  };
+  const visiblePages = getVisiblePages();
   return (
     <div className="d-flex justify-content-center mt-4">
       <ul className="pagination pagination-custom">
@@ -29,11 +67,13 @@ export default function PaginationComponent({
         </li>
 
         {/* Các nút số trang */}
-        {pages.map((page) => (
+        {visiblePages.map((page, index) => (
           <li
-            key={page}
-            className={`page-item ${page === currentPage ? 'active' : ''}`}
-            onClick={() => onPageChange(page)}
+            key={index}
+            className={`page-item ${
+              page === currentPage ? 'active' : ''
+            } ${page === '...' ? 'disabled' : ''}`}
+            onClick={() => typeof page === 'number' && onPageChange(page)}
           >
             <span className="page-link">{page}</span>
           </li>
