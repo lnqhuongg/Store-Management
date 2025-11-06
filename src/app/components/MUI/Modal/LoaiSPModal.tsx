@@ -12,7 +12,6 @@ interface ModalFormProps {
 
 export default function ModalForm({ show, handleClose, mode, LoaiSPData }: ModalFormProps) {
     const [formData, setFormData] = useState({ tenLoaiSP: '' });
-
     // Nếu là edit thì khi mở modal, nạp sẵn dữ liệu vào form
     useEffect(() => {
         if (mode === "edit" && LoaiSPData) {
