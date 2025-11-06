@@ -1,6 +1,8 @@
 'use client';
 import "./globals.css";
 import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import Sidebar from "@/app/components/Sidebar/Sidebar"
 import { usePathname } from "next/navigation";
 
