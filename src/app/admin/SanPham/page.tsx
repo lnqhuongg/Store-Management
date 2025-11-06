@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 import btnPriceLowtoHigh from "../../../../public/icons/priceLowtoHigh.png";
 import btnPriceHighToLow from "../../../../public/icons/priceHightoLow.png";
+import styleBtn from "../../components/MUI/styleMaterials.module.css"
+import searchIcon from "../../../../public/icons/loupe.png";
 
 // import styleSP from "./SanPham.module.css"
 import styleSP from "../../staff/SanPham/SanPham.module.css";
@@ -45,7 +47,7 @@ export default function SanPham() {
         console.log('Keyword:', keyword);
         console.log('-----------------------------------');
         setCurrentPage(1);
-        handleAdvancedSearchProducts(selectedCategory, selectedSupplier, isIncrease,keyword);
+        // handleAdvancedSearchProducts(selectedCategory, selectedSupplier, isIncrease,keyword);
     }, [selectedCategory, selectedSupplier, isIncrease, keyword]);
 
     const handleCategoryChange = (categoryID: string) => {
@@ -173,7 +175,7 @@ export default function SanPham() {
                             onClick={e => getBySortOrder(isIncrease)}
                         />
                     </button>
-                    {(selectedCategory || selectedSupplier) && (
+                    {(selectedCategory || selectedSupplier || keyword) && (
                         <button 
                             className="btn btn-outline-secondary"
                             onClick={() => {
@@ -183,9 +185,20 @@ export default function SanPham() {
                             Reset
                         </button>
                     )}
+                    {/* <SearchInputProducts keyword={keyword} setKeyword={setKeyword} handleSearchByKeyword={handleSearchByKeyword} /> */}
+                    <input type="text" className="bg-white p-1 rounded w-40" style={{width: 350}}  placeholder="Nhập từ khóa tìm kiếm..." onChange={e => setKeyword(e.target.value)} name="" id="" />
+                    <button className="btn btn-dark" type="submit" id=""
+                        onClick={() => handleAdvancedSearchProducts(selectedCategory, selectedSupplier, isIncrease,keyword)}
+                    >
+                        <Image
+                            src={searchIcon}
+                            alt="Thêm mới"
+                            className={`${styleBtn.iconLoupe}`}
+                        />
+                    </button>
                 </div>
                 <div>
-                    <SearchInputProducts keyword={keyword} setKeyword={setKeyword} handleSearchByKeyword={handleSearchByKeyword} />
+                    {/* <SearchInputProducts keyword={keyword} setKeyword={setKeyword} handleSearchByKeyword={handleSearchByKeyword} /> */}
                 </div>
                 
                 <div>

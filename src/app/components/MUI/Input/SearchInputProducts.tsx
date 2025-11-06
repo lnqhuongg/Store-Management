@@ -18,6 +18,7 @@ export default function SearchInputProducts({keyword, setKeyword, handleSearchBy
                 placeholder="Nhập từ khóa tìm kiếm..." 
                 value={keyword}
                 onChange={e => setKeyword(e.target.value)}
+                
                 />
             <button className="btn btn-dark" type="submit" id=""
                 onClick={() => handleSearchByKeyword(keyword)}
