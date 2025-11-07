@@ -421,23 +421,16 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData,
                                 </Form.Group>
                             )}
                             
-                            {mode == 'edit' ? (
+                            {mode == 'edit' && (
                                 <Form.Group className='mb-3'>
                                     <Form.Label>Barcode</Form.Label>
                                     <Form.Control type='text' 
+                                        disabled
                                         value={formData.barcode} 
                                         onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
                                     />
                                 </Form.Group>
-                            ) : (
-                                <Form.Group className='mb-3'>
-                                    <Form.Label>Barcode</Form.Label>
-                                    <Form.Control type='text'
-                                        value={formData.barcode} 
-                                        onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
-                                    />
-                                </Form.Group>
-                            )}
+                            ) }
                             
 
                             {/* tui lấy trường này ví dụ cho mng làm cái nút edit chứ thật chất ko có  */}
