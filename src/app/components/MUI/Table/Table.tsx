@@ -29,6 +29,24 @@ export default function TableComponent({
       return current && current[cleanKey] !== undefined ? current[cleanKey] : '';
     }, obj);
   };
+  const formatPrice = (price: number | string, currency: string = 'VND'): string => {
+        const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+        
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: currency,
+        }).format(numPrice);
+    };
+  const renderCellValue = (columnName: string, key: string, item: any) => {
+    const value = getNestedValue(item, key);
+    
+    // Kiểm tra nếu cột là "Đơn giá" hoặc key chứa "price"
+    if (columnName.toLowerCase().includes('giá') || key.toLowerCase().includes('price')) {
+      return formatPrice(value);
+    }
+    
+    return value;
+  };
 
   return (
     <div className="table-responsive mt-4 mb-4">
@@ -48,7 +66,7 @@ export default function TableComponent({
 
               <tr key={idx}>
                 {dataKeys.map((key, i) => (
-                  <td key={i}>{getNestedValue(item, key)}</td>
+                  <td key={i}>{renderCellValue(columns[i], key, item)}</td>
                 ))}
 
                 {/* có hành động thêm / xóa / sửa  */}

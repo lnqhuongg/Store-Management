@@ -19,7 +19,6 @@ import Image from "next/image";
 import { getAllProducts, searchByKeyword } from "@/app/services/products/productsService";
 import UseFetchSanPhamData from "../UseFetchData/UseFetchSanPhamData";
 import SearchInputProducts from "@/app/components/MUI/Input/SearchInputProducts";
-import ProductTableComponent from "@/app/components/MUI/Table/ProductTable";
 
 
 export default function SanPham() {
@@ -202,7 +201,7 @@ export default function SanPham() {
                 </div>
                 
                 <div>
-                    <ProductTableComponent
+                    <TableComponent
                         columns={columns}
                         dataKeys={dataKeys}
                         data={getCurrentPageData()}
