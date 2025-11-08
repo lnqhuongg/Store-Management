@@ -31,6 +31,12 @@ export default function Sidebar() {
           </li>
         ))}
       </ul>
+      <div>
+        <Link href="/auth/login"
+          className={`text-white text-end text-decoration-none d-block py-2 px-2 rounded linkStyle`}>
+          Đăng xuất
+        </Link>
+      </div>
     </aside>
   );
 }
