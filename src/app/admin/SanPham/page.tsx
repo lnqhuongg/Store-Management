@@ -16,9 +16,10 @@ import searchIcon from "../../../../public/icons/loupe.png";
 import styleSP from "../../staff/SanPham/SanPham.module.css";
 
 import Image from "next/image";
-import { getAllProducts, searchByKeyword } from "@/app/services/products/productsService";
-import UseFetchSanPhamData from "../UseFetchData/UseFetchSanPhamData";
 import SearchInputProducts from "@/app/components/MUI/Input/SearchInputProducts";
+import { createProductRequest, getAllProducts, getStockByProductId, updateProductRequest } from "@/app/controllers/SanPham/SanPhamControllers";
+import { getAll } from "@/app/controllers/LoaiSanPham/LoaiSanPhamController";
+import { getAllSuppliers } from "@/app/controllers/NhaCungCap/NhaCungCapControllers";
 
 
 export default function SanPham() {
@@ -31,33 +32,117 @@ export default function SanPham() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(5); 
     const [totalPages, setTotalPages] = useState(1);
-
+    const [listProducts, setListProducts] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [suppliers, setSuppliers] = useState<any[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(null);
     const [mode, setMode] = useState<'add' | 'edit'>('add');
-    const [keyword, setKeyword] = useState('');
-    const [isIncrease, setIsIncrease] = useState('asc');
-    const { data: listProducts, setData: setListProducts, loading, setLoading, announce, setAnnounce, handleSearchByKeyword, createProduct, updateProduct, categories, suppliers, getByCategory, getBySupplier, getBySortOrder, handleAdvancedSearchProducts } = UseFetchSanPhamData();
+    const [keyword, setKeyword] = useState<string>('');
+    const [isIncrease, setIsIncrease] = useState<string>('asc');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [announce, setAnnounce] = useState<null | { type: string; message: string }>(null);
+
+    const fetchProducts = async () => {
+        try {
+            setLoading(true);
+
+            const res = await getAllProducts(currentPage, 5, keyword, isIncrease, selectedCategory, selectedSupplier);
+            
+            const products = res.dataDTO.items || res.dataDTO.data || [];
+            
+            // Fetch stock cho từng sản phẩm
+            const productsWithStock = await Promise.all(
+                products.map(async (product: any) => {
+                    try {
+                        const stockResponse = await getStockByProductId(product.productID);
+                        return {
+                            ...product,
+                            stock: stockResponse.dataDTO?.quantity || 0
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching stock for product ${product.productID}:`, error);
+                        return {
+                            ...product,
+                            stock: 0
+                        };
+                    }
+                })
+            );
+            setListProducts(productsWithStock);
+            setTotalPages(res.dataDTO.totalPages || 1);
+      
+            
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            setAnnounce({ type: "danger", message: "Lỗi kết nối đến server!" });
+            setListProducts([]);
+            setTotalPages(1);
+        }
+    };
+
+    const fetchCategories = async () => {
+        try {
+            setLoading(true);
+            const res = await getAll();
+            setCategories(res.data || []);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+            setAnnounce({ type: "danger", message: "Lỗi kết nối đến server!" });
+            setCategories([]);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const fetchSuppliers = async () => {
+        try {
+            setLoading(true);
+            
+            const res = await getAllSuppliers();
+            setSuppliers(res.dataDTO ?? res);
+        } catch (error) {
+            console.error("Error fetching suppliers:", error);
+            setAnnounce({ type: "danger", message: "Lỗi kết nối đến server!" });
+            setSuppliers([]);
+        } finally {
+            setLoading(false);
+        }
+    }
+    
+    useEffect(() => {
+        fetchCategories();
+        fetchSuppliers();
+        fetchProducts(); 
+    }, []);
 
     useEffect(() => {
-        console.log('Selected Category:', selectedCategory);
-        console.log('Selected Supplier:', selectedSupplier);
-        console.log('Sort Order:', isIncrease);
-        console.log('Keyword:', keyword);
-        console.log('-----------------------------------');
-        setCurrentPage(1);
-        // handleAdvancedSearchProducts(selectedCategory, selectedSupplier, isIncrease,keyword);
-    }, [selectedCategory, selectedSupplier, isIncrease, keyword]);
+        fetchProducts();
+    }, [currentPage]);
 
-    const handleCategoryChange = (categoryID: string) => {
-        setSelectedCategory(categoryID);
-        // getByCategory(categoryID);
+
+    const createProduct = async (product: any) => {
+        try {
+            await createProductRequest(product);
+            setAnnounce({ type: "success", message: "Đã thêm sản phẩm thành công!" });
+            fetchProducts();
+        } catch (error) {
+            console.error("Error creating product:", error);
+            setAnnounce({ type: "danger", message: "Lỗi khi thêm sản phẩm!" });
+        } 
     };
 
-    const handleSupplierChange = (supplierID: string) => {
-        setSelectedSupplier(supplierID);
-        // getBySupplier(supplierID);
+    const updateProduct = async (id: string, product: any) => {
+        try {
+            await updateProductRequest(id, product);
+            setAnnounce({ type: "success", message: "Đã cập nhật sản phẩm thành công!" });
+            fetchProducts();
+        } catch (error) {
+            console.error("Error updating product:", error);
+            setAnnounce({ type: "danger", message: "Lỗi khi cập nhật sản phẩm!" });
+        } 
     };
+    
 
     const handleAdd = () => {
         setMode('add');
@@ -78,7 +163,6 @@ export default function SanPham() {
 
     const handleToggleIcon = () => {
         setIsIncrease(e => e === 'asc' ? 'desc' : 'asc');
-        // getBySortOrder(isIncrease === 'asc' ? 'desc' : 'asc');
     };
 
     const handleResetFilter = () => {
@@ -86,37 +170,14 @@ export default function SanPham() {
         setSelectedSupplier('');
         setIsIncrease('asc');
         setKeyword('');
-        // handleSearchByKeyword('');
     };
 
-
-    // fetch data tu service
-
-
-    const getCurrentPageData = () => {
-        if (!listProducts || !Array.isArray(listProducts)) {
-            return [];
-        }
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        return listProducts.slice(startIndex, endIndex);
+    const handleManualSearch = () => {
+        setCurrentPage(1);
+        fetchProducts();
     };
 
-    useEffect(() => {
-        if (!listProducts || !Array.isArray(listProducts)) {
-            setTotalPages(1);
-        } else if (listProducts.length > 0) {
-            const total = Math.ceil(listProducts.length / itemsPerPage);
-            setTotalPages(total);
-        } else {
-            setTotalPages(1);
-        }
-    }, [listProducts, itemsPerPage]);
-
-    if(loading){
-        return <div>Loading...</div>;
-    }
-
+    
     return (
         <section>
             <h4>Quản lý Sản phẩm</h4>
@@ -139,7 +200,7 @@ export default function SanPham() {
                         <select 
                             className="form-select" 
                             aria-label="Lọc theo loại sản phẩm"
-                            onChange={(e) => handleCategoryChange(e.target.value)}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
                             value={selectedCategory}
                         >
                             <option value="">Lọc theo loại</option>
@@ -154,7 +215,7 @@ export default function SanPham() {
                         <select 
                             className="form-select" 
                             aria-label="Lọc theo nhà cung cấp"
-                            onChange={(e) => handleSupplierChange(e.target.value)}
+                            onChange={(e) => setSelectedSupplier(e.target.value)}
                             value={selectedSupplier}
                         >
                             <option value="">Lọc theo nhà cung cấp</option>
@@ -171,7 +232,6 @@ export default function SanPham() {
                             src={isIncrease === 'asc' ? btnPriceLowtoHigh : btnPriceHighToLow}
                             alt={isIncrease === 'asc' ? "Sắp xếp giá tăng dần" : "Sắp xếp giá giảm dần"}
                             className={`${styleSP.iconFilterPrice}`}
-                            onClick={e => getBySortOrder(isIncrease)}
                         />
                     </button>
                     {(selectedCategory || selectedSupplier || keyword) && (
@@ -187,7 +247,7 @@ export default function SanPham() {
                     {/* <SearchInputProducts keyword={keyword} setKeyword={setKeyword} handleSearchByKeyword={handleSearchByKeyword} /> */}
                     <input type="text" className="bg-white p-1 rounded w-40" style={{width: 350}}  placeholder="Nhập từ khóa tìm kiếm..." onChange={e => setKeyword(e.target.value)} name="" id="" />
                     <button className="btn btn-dark" type="submit" id=""
-                        onClick={() => handleAdvancedSearchProducts(selectedCategory, selectedSupplier, isIncrease,keyword)}
+                        onClick={() => handleManualSearch()}
                     >
                         <Image
                             src={searchIcon}
@@ -204,7 +264,7 @@ export default function SanPham() {
                     <TableComponent
                         columns={columns}
                         dataKeys={dataKeys}
-                        data={getCurrentPageData()}
+                        data={listProducts}
                         onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
                         onDelete={(item) => handleDelete(item)}
                     />
