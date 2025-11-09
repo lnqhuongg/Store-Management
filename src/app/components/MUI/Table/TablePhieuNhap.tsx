@@ -1,26 +1,31 @@
 'use client';
+import Link from 'next/link';
 import { Table } from 'react-bootstrap';
 import ButtonEdit from '@/app/components/MUI/Button/ButtonEdit';
 import ButtonDelete from '@/app/components/MUI/Button/ButtonDelete';
+import ButtonDetail from '../Button/ButtonDetail';
 
 
 interface TableComponentProps {
   columns: string[];      // Tên các cột hiển thị
   dataKeys: string[];     // Key tương ứng trong dữ liệu
   data: any[];            // Mảng dữ liệu thực tế --- có data mới dùng (hoặc tạo data mẫu demo)
+  editLink?: string;      // nút edit
   showActions?: boolean;  // Có hiển thị cột hành động không
   onEdit?: (id: any) => void;
   onDelete?: (id: any) => void; // có thực hiện hành động bấm nút edit hay ko
-  onDetail?: (id: any) => void;
+  onDetail?: (id:any) => void;
 }
 
-export default function TableComponent({
+export default function TablePhieuNhapComponent({
   columns,
   dataKeys,
   data,
+  editLink,
   showActions = true,
   onEdit,
   onDelete,
+  onDetail
 }: TableComponentProps) {
 
   return (
@@ -47,7 +52,8 @@ export default function TableComponent({
                 {/* có hành động thêm / xóa / sửa  */}
                 {showActions && (
                   <td>
-                    <ButtonEdit onClick={() => onEdit?.(item)} />  {/* 👈 gọi cha, truyền item */}
+                    <ButtonDetail onClick={() => onDetail?.(item)}/>
+                    {/* <ButtonEdit onClick={() => onEdit?.(item)} />  👈 gọi cha, truyền item */}
                     <ButtonDelete onClick={() => onDelete?.(item)} />
                   </td>
                 )}

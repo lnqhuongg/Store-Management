@@ -1,22 +1,31 @@
-import "./globals.css"
+'use client';
+import "./globals.css";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Sidebar from "@/app/components/Sidebar/Sidebar"
+import { usePathname } from "next/navigation";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
+  const isLoginPage = pathname === "/auth/login";
+
   return (
     <html lang="en">
       <body>
         <main className="sticky-section">
-          <Sidebar />
-          <div className="children">
+
+          {!isLoginPage && <Sidebar />}
+
+          <div className={isLoginPage ? "login-page" : "children"}>
             {children}
           </div>
+
         </main>
       </body>
     </html>
