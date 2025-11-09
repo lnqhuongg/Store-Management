@@ -13,7 +13,7 @@ export default function DSSanPham() {
             <h4 className='border-bottom pb-1 text-primary-emphasis mb-0'>Danh sách Sản phẩm</h4>
             <form className='d-flex justify-content-around border-bottom py-3'>
                 <select className="form-select w-25">
-                    <option selected value={-1}>Loại sản phẩm</option>
+                    <option defaultValue={-1}>Loại sản phẩm</option>
                     <option value={1}>One</option>
                     <option value={2}>Two</option>
                     <option value={3}>Three</option>

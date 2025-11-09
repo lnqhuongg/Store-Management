@@ -8,30 +8,58 @@ interface ModalFormProps {
     handleClose: () => void;
     mode: 'add' | 'edit';     // chế độ: thêm hay sửa
     LoaiSPData?: any;           // dữ liệu cũ khi sửa
+    onSave: (data: any) => Promise<void>; // xử lý lưu -- hàm kiểu void
 }
 
-export default function ModalForm({ show, handleClose, mode, LoaiSPData }: ModalFormProps) {
-    const [formData, setFormData] = useState({ tenLoaiSP: '' });
+export default function ModalForm({ show, handleClose, mode, LoaiSPData, onSave }: ModalFormProps) {
+    // khởi tạo biến formData trong đó tên loại sp = ''
+    const [formData, setFormData] = useState({ categoryName: '' });
+
+    // dùng message này để xuất ra thông báo khi validate
+    const [errorMessage, setErrorMessage] = useState('');
+
+
+
+
     // Nếu là edit thì khi mở modal, nạp sẵn dữ liệu vào form
     useEffect(() => {
-        if (mode === "edit" && LoaiSPData) {
-            setFormData(LoaiSPData);
+    if (show) { // MỖI KHI MODAL MỞ
+        if (mode === 'edit' && LoaiSPData) {
+            setFormData({ categoryName: LoaiSPData.categoryName || '' });
         } else {
-            setFormData({ tenLoaiSP: "" });
+            setFormData({ categoryName: '' });
         }
-    }, [mode, LoaiSPData]);
+        setErrorMessage(''); // RESET LỖI MỖI LẦN MỞ
+    }
+    }, [show, mode, LoaiSPData]);
+
+
+
 
     // handle submit xác định nút đó là add hay sửa
-    const handleSubmit = () => {
-        if (mode === "add") {
-            console.log("thêm", formData);
-            // call POST API
-        } else {
-            console.log("sửa", formData);
-            // call PUT API
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault(); // ko reload lại trang mỗi khi bấm nút thêm / cập nhật trên modal
+        setErrorMessage('');
+
+        if (!formData.categoryName.trim()) {
+            setErrorMessage("Vui lòng nhập tên sản phẩm");
+            return;
         }
-        handleClose();
+        // lưu dữ liệu -- cái onsave này nó gửi đến handlesave ở bên giao diện LoaiSanPham
+        try {
+            await onSave({
+                categoryName: formData.categoryName.trim()
+            });
+            handleClose();
+        } catch (err: any) {
+            setErrorMessage(err.message || 'Lỗi khi lưu');
+        }
     };
+
+    
+
+    // show = true -> mo modal 
+    if (!show) return null;
 
     return (
         <Modal show={show} onHide={handleClose} centered>
@@ -46,32 +74,21 @@ export default function ModalForm({ show, handleClose, mode, LoaiSPData }: Modal
                         <Form.Label>Tên Loại sản phẩm</Form.Label>
                         <Form.Control
                             type="text"
-                            //   value={formData.name}
-                            //   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            value={formData.categoryName}
+                            onChange={(e) => setFormData({ ...formData, categoryName: e.target.value })}
                             placeholder='Nhập tên loại sản phẩm'
 
                         />
+                        {errorMessage && <div className="text-danger mt-1 ms-1 text-xs">{errorMessage}</div>}
                     </Form.Group>
-
-                    {/* tui lấy trường này ví dụ cho mng làm cái nút edit chứ thật chất ko có  */}
-
-                    {mode === "edit" && (
-                        <Form.Group className="mb-3">
-                            <Form.Label>Trạng thái</Form.Label>
-                            <Form.Select aria-label="Default select example">
-                                <option>Open this select menu</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="3">Three</option>
-                            </Form.Select>
-                        </Form.Group>
-                    )}
-
                     <div className="text-end">
                         <Button variant="secondary" onClick={handleClose} className="me-2">
                             Hủy
                         </Button>
-                        <Button variant="success" type="submit">
+                        <Button
+                            variant="success"
+                            type="submit"
+                            onClick={handleSubmit}>
                             {mode === "add" ? "Thêm mới" : "Cập nhật"}
                         </Button>
                     </div>

@@ -1,13 +1,12 @@
 'use client';
 
 import React from 'react';
-import style from "../styleMaterials.module.css"
 import "./Pagination.css";
 
 interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
+  currentPage: number; // trang hiện tại 
+  totalPages: number; // tất cả các trnag
+  onPageChange: (page: number) => void; // nút chuyển đổi giữa các trang 
 }
 
 export default function PaginationComponent({
@@ -62,6 +61,7 @@ export default function PaginationComponent({
         <li
           className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}
           onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
+          style={{ cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
         >
           <span className="page-link">{'<'}</span>
         </li>
