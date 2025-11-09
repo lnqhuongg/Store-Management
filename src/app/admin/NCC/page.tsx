@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
 import SearchInput from "@/app/components/MUI/Input/SearchInput";
-import TableComponent from "@/app/components/MUI/Table/NCCTable";
+import TableComponent from "@/app/components/MUI/Table/Table";
 import PaginationComponent from "@/app/components/Pagination/Pagination";
 import NCCModal from "@/app/components/MUI/Modal/NCCModal";
 
@@ -53,7 +53,7 @@ export default function NhaCungCap() {
 
     return (
         <section>
-            <h4>Quản lý nhà cung cấp</h4>
+            <h4>Quản lý Nhà cung cấp</h4>
             <div className="loaisanpham py-4">
                 <div>
                     {/* gửi hành showmodal(true) cho button -- mở modal  */}
@@ -67,7 +67,6 @@ export default function NhaCungCap() {
                         columns={columns}
                         dataKeys={dataKeys}
                         data={data}
-                        editLink="/admin/nha-cung-cap/edit"
                         onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
                     />
                 </div>
