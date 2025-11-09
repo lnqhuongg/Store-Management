@@ -1,0 +1,67 @@
+*   [33m2e6ab4a[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m Merge remote-tracking branch 'origin/camtri'
+[31m|[m[32m\[m  
+[31m|[m * [33mfbe30e4[m[33m ([m[1;31morigin/camtri[m[33m, [m[1;32mcamtri[m[33m)[m Update admin/SanPham
+[31m|[m * [33mf865516[m add staff/KhachHang
+[31m|[m *   [33mb785ff5[m Merge branch 'main' of https://github.com/lnqhuongg/Store-Management into camtri
+[31m|[m [33m|[m[34m\[m  
+[31m|[m * [34m|[m [33me002f6b[m add FE phieunhap
+[31m|[m * [34m|[m [33m1ef2818[m add FE sanpham
+* [34m|[m [34m|[m   [33m956ee76[m Merge branch 'main' of https://github.com/lnqhuongg/Store-Management
+[35m|[m[36m\[m [34m\[m [34m\[m  
+* [36m|[m [34m|[m [34m|[m [33me59f2f2[m bo quet barcode = camera
+[36m|[m [36m|[m [34m|[m [34m|[m * [33mf23ef4e[m[33m ([m[1;31morigin/mtrinh[m[33m)[m Revert "Merge branch 'main' of https://github.com/lnqhuongg/Store-Management into mtrinh"
+[36m|[m [36m|[m [34m|[m [34m|[m *   [33m837afff[m Merge branch 'main' of https://github.com/lnqhuongg/Store-Management into mtrinh
+[36m|[m [36m|[m [34m|[m [34m|[m [1;32m|[m[36m\[m  
+[36m|[m [36m|[m [34m|[m[36m_[m[34m|[m[36m_[m[1;32m|[m[36m/[m  
+[36m|[m [36m|[m[36m/[m[34m|[m [34m|[m [1;32m|[m   
+[36m|[m * [34m|[m [34m|[m [1;32m|[m [33ma59b372[m[33m ([m[1;31morigin/main[m[33m)[m Update README.md
+[36m|[m * [34m|[m [34m|[m [1;32m|[m [33mffba624[m Update README.md
+[36m|[m * [34m|[m [34m|[m [1;32m|[m [33m704c2d0[m Update README.md
+[36m|[m * [34m|[m [34m|[m [1;32m|[m [33m2afaa21[m Update README.md
+[36m|[m * [34m|[m [34m|[m [1;32m|[m [33m05604f9[m Update README.md
+[36m|[m [34m|[m [34m|[m[34m/[m [1;32m/[m  
+[36m|[m [34m|[m[34m/[m[34m|[m [1;32m|[m   
+[36m|[m * [34m|[m [1;32m|[m   [33md74ed7e[m Merge branch 'main' of https://github.com/lnqhuongg/Store-Management
+[36m|[m [1;34m|[m[36m\[m [34m\[m [1;32m\[m  
+[36m|[m [1;34m|[m[36m/[m [34m/[m [1;32m/[m  
+[36m|[m[36m/[m[1;34m|[m [34m|[m [1;32m|[m   
+* [1;34m|[m [34m|[m [1;32m|[m [33mc7e5bb3[m Giao diện bán hàng + sửa code table Trung, Trinh, Tri
+[34m|[m [1;34m|[m[34m/[m [1;32m/[m  
+[34m|[m[34m/[m[1;34m|[m [1;32m|[m   
+[34m|[m [1;34m|[m * [33mcd65bfc[m update chi tiet hoa don modal
+[34m|[m [1;34m|[m * [33m0f77ec3[m update 2
+[34m|[m [1;34m|[m * [33m3e699c9[m update don hang, login
+[34m|[m [1;34m|[m[34m/[m  
+[34m|[m[34m/[m[1;34m|[m   
+[34m|[m [1;34m|[m * [33m2470371[m[33m ([m[1;31morigin/khanh[m[33m)[m fix lỗi update cái table compoment
+[34m|[m [1;34m|[m * [33md5c214f[m update modal khachhang
+[34m|[m [1;34m|[m * [33mdc69c38[m mgiao dien khach hang
+[34m|[m [1;34m|[m[34m/[m  
+[34m|[m[34m/[m[1;34m|[m   
+[34m|[m [1;34m|[m * [33mde991c9[m[33m ([m[1;31morigin/duc[m[33m)[m giao dien thong ke
+[34m|[m [1;34m|[m [31m|[m * [33ma8fb836[m[33m ([m[1;31morigin/hung[m[33m)[m fix button delete
+[34m|[m [1;34m|[m [31m|[m *   [33m64d8a20[m Merge branch 'main' of https://github.com/lnqhuongg/Store-Management into hung
+[34m|[m [1;34m|[m [31m|[m [33m|[m[1;34m\[m  
+[34m|[m [1;34m|[m [31m|[m[1;34m_[m[33m|[m[1;34m/[m  
+[34m|[m [1;34m|[m[1;34m/[m[31m|[m [33m|[m   
+[34m|[m [1;34m|[m [31m|[m * [33m5d444d3[m add modal
+[34m|[m [1;34m|[m [31m|[m [34m|[m * [33mff85134[m[33m ([m[1;31morigin/trungle[m[33m)[m tui2
+[34m|[m [1;34m|[m [31m|[m [34m|[m * [33m8610cc1[m Revert "tui"
+[34m|[m [1;34m|[m [31m|[m [34m|[m * [33m39de1c6[m tui
+[34m|[m [1;34m|[m [31m|[m[1;34m_[m[34m|[m[1;34m/[m  
+[34m|[m [1;34m|[m[1;34m/[m[31m|[m [34m|[m   
+[34m|[m * [31m|[m [34m|[m [33m8c3125d[m fix
+[34m|[m [31m|[m[31m/[m [34m/[m  
+[34m|[m * [34m/[m [33m8feb0f4[m Create ăd
+[34m|[m [34m|[m[34m/[m  
+[34m|[m *   [33m0b33b5f[m Merge branch 'main' of https://github.com/lnqhuongg/Store-Management
+[34m|[m [36m|[m[34m\[m  
+[34m|[m [36m|[m[34m/[m  
+[34m|[m[34m/[m[36m|[m   
+* [36m|[m [33ma0640c9[m 16/10/2025 cap nhat table
+* [36m|[m [33m2a53420[m cap nhat ngay 16/10/2025 - them modal cho nut them sua + bat su kien nut delete
+[1;31m|[m * [33ma3797b4[m add page MaGiamGia
+[1;31m|[m[1;31m/[m  
+* [33me824d16[m cap nhat nut edit & nut delete trong table
+* [33m48be08c[m 10/10/2025
+* [33me4ff614[m Initial commit from Create Next App

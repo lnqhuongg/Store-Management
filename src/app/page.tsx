@@ -1,7 +1,5 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div>trang chu</div>
-  );
-} 
+  redirect("/auth/login");
+}
