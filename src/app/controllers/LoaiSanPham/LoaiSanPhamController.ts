@@ -13,14 +13,14 @@ export async function getAll(page: number = 1, pageSize: number = 5, keyword: st
     // gọi hàm apiFetch từ /lib/api.ts sau đó truyền vô url của module mình làm 
     // TẠO URL bên api 
     const params = new URLSearchParams();
-    // /loaisanpham + 2 tham số là page: đang ở trang số mấy và pagesize là số bản ghi hiển thị trên 1 phân trang đó 
+    // /loaisanpham + 2 tham số là page: đang ở trang số mấy và pagesize là số bản ghi hiển thị trên 1 phân trang đó
     params.append('page', page.toString());
     params.append('pageSize', pageSize.toString());
     // nếu có tìm kiếm (có keyword)
     if (keyword) params.append('keyword', keyword);
 
     const res = await apiFetch<any>(`/categories?${params.toString()}`);
-
+    console.log(res);
     return {
         // nhận data là danh sách DTO mình truyền từ controller 
         data: res.dataDTO?.data || [],

@@ -1,7 +1,8 @@
 'use client';
+const API_URL = 'http://localhost:5224/api/products';
 export async function getAllProducts() {
     try {
-        const response = await fetch('https://localhost:7107/api/products');
+        const response = await fetch(API_URL);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -11,7 +12,7 @@ export async function getAllProducts() {
 }
 export async function getProductById(id: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/${id}`);
+        const response = await fetch(`${API_URL}/${id}`);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -21,7 +22,7 @@ export async function getProductById(id: string) {
 }
 export async function createProductRequest(product: FormData) {
     try {
-        const response = await fetch('https://localhost:7107/api/products', {
+        const response = await fetch(API_URL, {
             method: 'POST',
             // headers: { 'Content-Type': 'application/json' },
             body: product,
@@ -47,7 +48,7 @@ export async function createProductRequest(product: FormData) {
 }
 export async function updateProductRequest(id: string, product: FormData) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/${id}`, {
+        const response = await fetch(`${API_URL}/${id}`, {
             method: 'PUT',
             // headers: { 'Content-Type': 'application/json' },
             body: product,
@@ -68,7 +69,7 @@ export async function updateProductRequest(id: string, product: FormData) {
 }
 export async function deleteProduct(id: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/${id}`, {
+        const response = await fetch(`${API_URL}/${id}`, {
             method: 'DELETE',
         }); 
         if (!response.ok) {
@@ -82,7 +83,7 @@ export async function deleteProduct(id: string) {
 }
 export async function searchByKeyword(keyword: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/search?keyword=${keyword}`, {
+        const response = await fetch(`${API_URL}/search?keyword=${keyword}`, {
             method: 'GET',
         }); 
         if(response.status === 204) {
@@ -109,7 +110,7 @@ export async function filterByCategory(categoryID: string) {
 }
 export async function filterBySupplier(supplierID: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/supplier/${supplierID}`, {
+        const response = await fetch(`${API_URL}/supplier/${supplierID}`, {
             method: 'GET',
         }); 
         const data = await response.json();
