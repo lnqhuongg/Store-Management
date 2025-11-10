@@ -24,7 +24,7 @@ export async function getAll(page: number = 1, pageSize: number = 5, keyword: st
     // nếu có tìm kiếm (có keyword)
     if (keyword) params.append('keyword', keyword);
 
-    const res = await apiFetch<any>(`/khachhang?${params.toString()}`);
+    const res = await apiFetch<any>(`/customers?${params.toString()}`);
 
     return {
         // nhận data là danh sách DTO mình truyền từ controller 
@@ -39,13 +39,13 @@ export async function getAll(page: number = 1, pageSize: number = 5, keyword: st
 
 // === GET BY ID ===
 export async function getById(id: number): Promise<IKhachHang> {
-    const res = await apiFetch<any>(`/khachhang/${id}`);
+    const res = await apiFetch<any>(`/customers/${id}`);
     return res.dataDTO;
 }
 
 // === CREATE ===
 export async function create(dto: IKhachHang): Promise<IKhachHang> {
-    const res = await apiFetch<any>('/khachhang', {
+    const res = await apiFetch<any>('/customers', {
         method: 'POST',
         body: JSON.stringify(dto),
     });
@@ -54,7 +54,7 @@ export async function create(dto: IKhachHang): Promise<IKhachHang> {
 
 // === UPDATE ===
 export async function update(id: number, dto: IKhachHang): Promise<IKhachHang> {
-    const res = await apiFetch<any>(`/khachhang/${id}`, {
+    const res = await apiFetch<any>(`/customers/${id}`, {
         method: 'PUT',
         body: JSON.stringify(dto),
     });
