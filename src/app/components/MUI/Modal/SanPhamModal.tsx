@@ -3,9 +3,8 @@ import { Modal, Form, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { stat } from 'fs';
-import { getAllCategories } from '@/app/services/categories/categoryService';
-import { getAllSuppliers } from '@/app/services/suppliers/supplierService';
 import { getAll } from "../../../controllers/LoaiSanPham/LoaiSanPhamController";
+import { getAllSuppliers } from '@/app/controllers/NhaCungCap/NhaCungCapControllers';
 
 interface ModalFormProps {
     show: boolean;
