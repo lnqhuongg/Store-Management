@@ -60,3 +60,14 @@ export async function update(id: number, dto: INhaCungCap): Promise<INhaCungCap>
 export async function deleteItem(id: number): Promise<void> {
   await apiFetch(`/suppliers/${id}`, { method: "DELETE" });
 }
+
+export async function getAllSuppliers() {
+    try {
+        const response = await fetch('https://localhost:7107/api/suppliers/getAllNCC');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching suppliers:', error);
+        throw error;
+    }
+}

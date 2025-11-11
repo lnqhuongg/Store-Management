@@ -26,7 +26,7 @@ export default function LoaiSanPham() {
     // hàm để load data lên bảng 
     const loadData = async () => {
         try {
-            const result = await getAll(currentPage, 5, keyword);
+            const result = await getAll(currentPage, 3, keyword);
             setData(result.data);
             setTotalPages(result.pagination.totalPages || 1);
         } catch (err: any) {
