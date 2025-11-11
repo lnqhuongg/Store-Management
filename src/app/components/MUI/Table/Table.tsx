@@ -3,7 +3,6 @@ import { Table } from 'react-bootstrap';
 import ButtonEdit from '@/app/components/MUI/Button/ButtonEdit';
 import ButtonDelete from '@/app/components/MUI/Button/ButtonDelete';
 
-
 interface TableComponentProps {
   columns: string[];      // Tên các cột hiển thị
   dataKeys: string[];     // Key tương ứng trong dữ liệu
@@ -38,17 +37,16 @@ export default function TableComponent({
           {/* nếu có data */}
           {data && data.length > 0 ? (
             data.map((item, idx) => (
-
               <tr key={idx}>
                 {dataKeys.map((key, i) => (
                   <td key={i}>{item[key]}</td>
                 ))}
 
-                {/* có hành động thêm / xóa / sửa  */}
+                {/* có hành động thêm / xóa / sửa */}
                 {showActions && (
                   <td>
-                    <ButtonEdit onClick={() => onEdit?.(item)} />  {/* 👈 gọi cha, truyền item */}
-                    <ButtonDelete onClick={() => onDelete?.(item)} />
+                    <ButtonEdit onClick={() => onEdit?.(item)} /> {/* 👈 gọi cha, truyền item */}
+                    {onDelete && <ButtonDelete onClick={() => onDelete?.(item)} />} {/* 👈 chỉ hiển thị nếu onDelete được truyền */}
                   </td>
                 )}
               </tr>
