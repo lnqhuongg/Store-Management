@@ -9,6 +9,18 @@ export async function getAllProducts(page: number, pageSize: number, keyword: st
         throw error;
     }
 }
+
+export async function getAllSP() {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+    }
+}
+
 export async function getProductById(id: string) {
     try {
         const response = await fetch(`https://localhost:7107/api/products/${id}`);

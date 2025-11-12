@@ -59,3 +59,7 @@ body {
 ul li {
     padding-left: 0px;
 }
+
+.selected-row td {
+  background-color: #d3d3d3 !important; /* !important để ghi đè Bootstrap */
+}
