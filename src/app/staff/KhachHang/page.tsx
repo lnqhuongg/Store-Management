@@ -1,59 +1,121 @@
+// app/staff/KhachHang/page.tsx
 'use client';
 
-import SearchInput from "@/app/components/MUI/Input/SearchInput";
-import Image from "next/image";
-import btnPriceLowtoHigh from "../../../../public/icons/priceLowtoHigh.png";
-import btnPriceHighToLow from "../../../../public/icons/priceHightoLow.png";
-import SPImage from "../../../../public/sanpham/1.jpg";
-import styleSP from "../../staff/SanPham/SanPham.module.css"
-import { Tab, Table } from "react-bootstrap";
+import { useEffect, useState } from 'react';
 import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
-import { useState } from "react";
+import SearchInput from "@/app/components/MUI/Input/SearchInput";
+import TableComponent from "@/app/components/MUI/Table/Table";
+import PaginationComponent from "@/app/components/Pagination/Pagination";
 import KhachHangModal from "@/app/components/MUI/Modal/KhachHangModal";
 
+import { getAll, create } from '@/app/controllers/KhachHang/KhachHangController';
+
 export default function KhachHangPage() {
-    const [modal, setModal] = useState(false);
-    const handleAdd = () => {
-        setModal(true);
+  const columns = ['Choose', 'Tên khách hàng', 'Số điện thoại', 'Địa chỉ', 'Điểm tích lũy'];
+  const dataKeys = ['choose', 'name', 'phone', 'address', 'rewardPoints']; // ← PHẢI KHỚP
+
+  const [data, setData] = useState<any[]>([]);
+  const [keyword, setKeyword] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const loadData = async () => {
+    try {
+      const res = await getAll(currentPage, 5, keyword);
+      setData(res.data);
+      setTotalPages(res.pagination.totalPages || 1);
+    } catch (e: any) {
+      alert(e.message || 'Lỗi tải danh sách khách hàng');
     }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [currentPage, keyword]);
+
+  const handleAdd = () => setShowModal(true);
+
+  const handleSave = async (formData: any) => {
+    try {
+      const newCust = await create({
+        ...formData,
+        rewardPoints: formData.rewardPoints ?? 0,
+        address: formData.address?.trim() || ''
+      });
+      alert('Thêm khách hàng thành công!');
+      await loadData();
+      setSelectedId(newCust.customerId);
+      setShowModal(false);
+    } catch (e: any) {
+      alert(e.message || 'Lỗi khi thêm khách hàng');
+    }
+  };
+
+  // ĐẢM BẢO DỮ LIỆU ĐÚNG TRƯỚC KHI ĐƯA VÀO BẢNG
+  const mappedData = data.map(item => ({
+    ...item,
+    choose: (
+      <div className="text-center">
+        <input
+          type="radio"
+          name="selectCustomer"
+          value={item.customerId}
+          checked={selectedId === item.customerId}
+          onChange={() => setSelectedId(item.customerId)}
+        />
+      </div>
+    ),
+    name: item.name || '—',
+    phone: item.phone || '—',
+    address: item.address || '—',
+    rewardPoints: item.rewardPoints ?? 0, // ← quan trọng
+  }));
+
   return (
-    <section className='bg-light p-3 rounded' style={{height: "698px"}}>
-            <h4 className='border-bottom pb-1 text-primary-emphasis mb-0'>Danh sách Sản phẩm</h4>
-            <form className='d-flex justify-content-around border-bottom py-3'>
-                <div className="d-flex align-items-center">
-                    <ButtonAdd onClick={handleAdd}/>
-                </div>
-                <div className="d-flex align-items-center" style={{height: "37px", width: "400px"}}>
-                    <SearchInput />
-                </div>
-            </form>
-            {/* danh sách sản phẩm  */}
-            <div className="product-list row row-cols-4 overflow-auto" style={{maxHeight: "566px"}}>
-                <table className="table table-striped table-hover w-100">
-                    <thead className="text-center gap-2 h-10 align-middle">
-                        <th>Choose</th>
-                        <th>Họ Tên</th>
-                        <th>Email</th>
-                        <th>Số điện thoại</th>
-                    </thead>
-                    <tbody className="text-center gap-2">
-                        <tr>
-                            <td><input type="radio" name="idKH" id="" /></td>
-                            <td>Lữ Thị Cẩm Tri</td>
-                            <td>tititi123@gmail.com</td>
-                            <td>0123456789</td>
-                        </tr>
-                        <tr>
-                            <td><input type="radio" name="idKH" id="" /></td>
-                            <td>Nguyễn Văn A</td>
-                            <td>nguyenvana@gmail.com</td>
-                            <td>0987654321</td>
-                        </tr>
-                            
-                    </tbody>
-                </table>
-            </div>
-            <KhachHangModal show={modal} handleClose={() => setModal(false)} mode={'add'} KhachHangData={null} />
-        </section>
+    <section className='bg-light p-3 rounded' style={{ height: '698px' }}>
+      <h4 className='border-bottom pb-1 text-primary-emphasis mb-0'>
+        Danh sách Khách hàng
+      </h4>
+
+      <div className='d-flex justify-content-around border-bottom py-3 align-items-center'>
+        <ButtonAdd onClick={handleAdd} />
+        <div style={{ width: '400px' }}>
+          <SearchInput onSearch={(v) => { setKeyword(v); setCurrentPage(1); }} />
+        </div>
+      </div>
+
+      <div className="overflow-auto" style={{ maxHeight: '480px' }}>
+        {data.length === 0 ? (
+          <div className="text-center py-4 text-muted">
+            {keyword ? 'Không tìm thấy khách hàng nào' : 'Chưa có dữ liệu'}
+          </div>
+        ) : (
+          <TableComponent
+            columns={columns}
+            dataKeys={dataKeys}
+            data={mappedData}
+            showActions={false} // ← đã bỏ cột Tùy chỉnh
+          />
+        )}
+      </div>
+
+      <div className="mt-3 d-flex justify-content-center">
+        <PaginationComponent
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+      </div>
+
+      <KhachHangModal
+        show={showModal}
+        handleClose={() => setShowModal(false)}
+        mode="add"
+        KhachHangData={null}
+        onSave={handleSave}
+      />
+    </section>
   );
 }
