@@ -1,4 +1,14 @@
 'use client';
+export async function getListProducts() {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/list`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+    }
+}
 export async function getAllProducts(page: number, pageSize: number, keyword: string, order: string, categoryID: string, supplierID: string) {
     try {
         const response = await fetch(`https://localhost:7107/api/products?page=${page}&pageSize=${pageSize}&keyword=${keyword}&order=${order}&category_id=${categoryID}&supplier_id=${supplierID}`);
@@ -22,10 +32,13 @@ export async function getProductById(id: string) {
 export async function getStockByProductId(id: string) {
     try {
         const response = await fetch(`https://localhost:7107/api/products/getStock/${id}`);
+        if(response.status === 404) {
+            return { dataDTO: { quantity: 0 } }; // Trả về stock = 0 nếu không tìm thấy sản phẩm
+        }
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error(`Error fetching stock for product with id ${id}:`, error);
+        // console.error(`Error fetching stock for product with id ${id}:`, error);
         throw error;
     }
 }
@@ -90,9 +103,9 @@ export async function deleteProduct(id: string) {
         throw error;
     }
 }
-export async function searchByKeyword(keyword: string) {
+export async function searchByCategoryIDAndSortOrderAndKeyword(category_id: string, sortOrder: string, keyword: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/search?keyword=${keyword}`, {
+        const response = await fetch(`https://localhost:7107/api/products/search?category_id=${category_id}&order=${sortOrder}&keyword=${keyword}`, {
             method: 'GET',
         }); 
         if(response.status === 204) {
@@ -102,54 +115,6 @@ export async function searchByKeyword(keyword: string) {
         return data;
     } catch (error) {
         console.error(`Error searching with keyword ${keyword}:`, error);
-        throw error;
-    }
-}
-export async function filterByCategory(categoryID: string) {
-    try {
-        const response = await fetch(`https://localhost:7107/api/products/category/${categoryID}`, {
-            method: 'GET',
-        }); 
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error(`Error filtering by categoryID ${categoryID}:`, error);
-        throw error;
-    }
-}
-export async function filterBySupplier(supplierID: string) {
-    try {
-        const response = await fetch(`https://localhost:7107/api/products/supplier/${supplierID}`, {
-            method: 'GET',
-        }); 
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error(`Error filtering by supplierID ${supplierID}:`, error);
-        throw error;
-    }
-}
-export async function fiterBySortOrder(order: string) {
-    try {
-        const response = await fetch(`https://localhost:7107/api/products/sort/${order}`, {
-            method: 'GET',
-        }); 
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error(`Error filtering by sort order ${order}:`, error);
-        throw error;
-    }
-}
-export async function advancedSearchProducts(categoryID: string, supplierID: string, sortOrder: string, keyword?: string) {
-    try {
-        const res = await fetch(`https://localhost:7107/api/products/advanced_search?supplier_id=${supplierID}&category_id=${categoryID}&order=${sortOrder}&keyword=${keyword}`, {
-            method: 'GET',
-        });
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        console.error('Error in advanced search:', error);
         throw error;
     }
 }
