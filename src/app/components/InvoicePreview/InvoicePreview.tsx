@@ -29,7 +29,7 @@ export default function InvoicePreview() {
                         </div>
                         <div className="input-group " style={{ height: "35px", width: "130px" }}>
                             <button className="btn btn-outline-secondary" type="button">-</button>
-                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1} value={1}/>
+                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1}defaultValue={1}/>
                             <button className="btn btn-outline-secondary" type="button">+</button>
                         </div>
                     </div>
@@ -46,7 +46,7 @@ export default function InvoicePreview() {
                         </div>
                         <div className="input-group " style={{ height: "35px", width: "130px" }}>
                             <button className="btn btn-outline-secondary" type="button">-</button>
-                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1} value={1}/>
+                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1}defaultValue={1}/>
                             <button className="btn btn-outline-secondary" type="button">+</button>
                         </div>
                     </div>
@@ -63,7 +63,7 @@ export default function InvoicePreview() {
                         </div>
                         <div className="input-group " style={{ height: "35px", width: "130px" }}>
                             <button className="btn btn-outline-secondary" type="button">-</button>
-                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1} value={1}/>
+                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1}defaultValue={1}/>
                             <button className="btn btn-outline-secondary" type="button">+</button>
                         </div>
                     </div>
@@ -80,7 +80,7 @@ export default function InvoicePreview() {
                         </div>
                         <div className="input-group " style={{ height: "35px", width: "130px" }}>
                             <button className="btn btn-outline-secondary" type="button">-</button>
-                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1} value={1}/>
+                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1}defaultValue={1}/>
                             <button className="btn btn-outline-secondary" type="button">+</button>
                         </div>
                     </div>
@@ -97,7 +97,7 @@ export default function InvoicePreview() {
                         </div>
                         <div className="input-group " style={{ height: "35px", width: "130px" }}>
                             <button className="btn btn-outline-secondary" type="button">-</button>
-                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1} value={1}/>
+                            <input type="text" style={{fontSize: "14px"}} className="form-control text-center" min={1} defaultValue={1}/>
                             <button className="btn btn-outline-secondary" type="button">+</button>
                         </div>
                     </div>
