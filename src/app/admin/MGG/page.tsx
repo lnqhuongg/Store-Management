@@ -1,13 +1,19 @@
 ﻿"use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
 import SearchInput from "@/app/components/MUI/Input/SearchInput";
 import TableComponent from "@/app/components/MUI/Table/Table";
 import PaginationComponent from "@/app/components/Pagination/Pagination";
 import MaGiamGiaModal from "@/app/components/MUI/Modal/MaGiamGiaModal";
+import {
+    getAll,
+    create,
+    update,
+    deleteItem,
+    IMaGiamGia,
+} from "@/app/controllers/MaGiamGia/MaGiamGiaController";
 
 export default function MaGiamGia() {
-    // header cho table Ma giam gia
     const columns = [
         "Mã giảm giá",
         "Mô tả",
@@ -16,87 +22,133 @@ export default function MaGiamGia() {
         "Ngày kết thúc",
         "Trạng thái",
     ];
-    const dataKeys = [
-        "code",
-        "description",
-        "discount",
-        "startDate",
-        "endDate",
-        "status",
-    ];
-    // data mẫu
-    const data = [
-        {
-            id: 1,
-            code: "SALE10",
-            description: "Giảm 10% cho đơn hàng từ 500k",
-            discount: 10,
-            startDate: "2024-06-01",
-            endDate: "2024-06-30",
-            status: "Đang hoạt động",
-        },
-        {
-            id: 2,
-            code: "FREESHIP",
-            description: "Miễn phí vận chuyển",
-            discount: 0,
-            startDate: "2024-06-01",
-            endDate: "2024-06-15",
-            status: "Hết hạn",
-        },
-    ];
+    // use keys that match the API DTO returned by MaGiamGiaController
+    const dataKeys = ["promoCode", "description", "discountValue", "startDate", "endDate", "status"];
 
-    // data mẫu chạy thử phân trang
+    const [data, setData] = useState<IMaGiamGia[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 5;
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageSize] = useState(5);
 
-    // ------------------------------- update 16/10/2025
+    const [keyword, setKeyword] = useState("");
+    // discountType is sent to the controller (it will append to query string).
+    // restore setter so UI can change it.
+    const [discountType, setDiscountType] = useState("");
 
     const [showModal, setShowModal] = useState(false);
-    // typescript - state này chỉ có giá trị là 'add' hoặc 'edit' không có giá trị khác
-    // '<>' là type, kiểu dữ liệu của state - union type
-    // khởi tạo mode = 'add'
-    const [mode, setMode] = useState<'add' | 'edit'>('add');
-    // này để xác định mình bấm edit của thằng nào trong mấy dòng của table
-    const [selectedIndex, setSelectedIndex] = useState(null);
-    // Khi bấm nút thêm
+    const [mode, setMode] = useState<"add" | "edit">("add");
+    const [selectedItem, setSelectedItem] = useState<IMaGiamGia | null>(null);
+
+    const loadData = async (page = 1) => {
+        try {
+            const resp = await getAll(page, pageSize, keyword, discountType);
+            console.log('getAll response', resp);
+            setData(resp.data || []);
+            setCurrentPage(resp.pagination?.currentPage || page);
+            setTotalPages(resp.pagination?.totalPages || 1);
+        } catch (err) {
+            console.error("Lỗi khi tải dữ liệu mã giảm giá:", err);
+            alert("Không thể tải dữ liệu. Kiểm tra console.");
+        }
+    };
+
+    useEffect(() => {
+        loadData(1);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [keyword, discountType]);
+
+    useEffect(() => {
+        loadData(currentPage);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage]);
+
     const handleAdd = () => {
-        setMode('add');
-        setSelectedIndex(null);
+        setMode("add");
+        setSelectedItem(null);
         setShowModal(true);
     };
-    // Khi bấm nút sửa
-    // kiểu dữ liệu là any - là kiểu dữ liệu gì cũng được, int hay object gì cũng được, một thay = id
-    const handleEdit = (MaGiamGia: any) => {
-        setMode('edit');
-        setSelectedIndex(MaGiamGia);
+
+    const handleEdit = (item: IMaGiamGia) => {
+        setMode("edit");
+        setSelectedItem(item);
         setShowModal(true);
     };
-    // KHI BẤM NÚT XÓA
-    const handleDelete = (MaGiamGia: any) => {
-        setSelectedIndex(MaGiamGia);
-        alert('Đã bấm vào button xóa');
+
+    const handleDelete = async (item: IMaGiamGia) => {
+        if (!item || !item.promoId) return;
+        if (!confirm(`Bạn có chắc muốn xóa mã ${item.promoId}?`)) return;
+        try {
+            await deleteItem(item.promoId);
+            // reload current page
+            loadData(currentPage);
+        } catch (err) {
+            console.error(err);
+            alert("Xóa thất bại");
+        }
     };
+
+    const handleSearch = (value: string) => {
+        console.log('handleSearch called with', value);
+        setKeyword(value);
+        setCurrentPage(1);
+    };
+
+    const handleSave = async (payload: IMaGiamGia) => {
+        try {
+            if (mode === "add") {
+                await create(payload);
+            } else if (mode === "edit" && payload.promoId) {
+                await update(payload.promoId, payload);
+            }
+            setShowModal(false);
+            loadData(1);
+        } catch (err) {
+            console.error(err);
+            alert("Lưu thất bại. Kiểm tra console.");
+        }
+    };
+
     return (
         <section>
             <h4>Quản lý Mã giảm giá</h4>
             <div className="magiamgia py-4">
-                <div>
-                    {/* gửi hàm showmodal(true) cho button -- mở modal  */}
-                    <ButtonAdd onClick={handleAdd} />
+                <div className="d-flex align-items-center gap-3 mb-3">
+                    <div>
+                        <ButtonAdd onClick={handleAdd} />
+                    </div>
+
+                    <div>
+                        <select
+                            className="form-select"
+                            style={{ minWidth: 180 }}
+                            value={discountType}
+                            onChange={(e) => {
+                                setDiscountType(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            aria-label="Lọc loại giảm"
+                        >
+                            <option value="">Tất cả mã giảm</option>
+                            <option value="percent">Phần trăm</option>
+                            <option value="fixed">Tiền</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <SearchInput />
+
+                <div className="mb-3">
+                    <SearchInput onSearch={handleSearch} />
                 </div>
+
                 <div>
                     <TableComponent
                         columns={columns}
                         dataKeys={dataKeys}
                         data={data}
-                        onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
+                        onEdit={(item) => handleEdit(item)}
                         onDelete={(item) => handleDelete(item)}
                     />
                 </div>
+
                 <div>
                     <PaginationComponent
                         currentPage={currentPage}
@@ -105,11 +157,13 @@ export default function MaGiamGia() {
                     />
                 </div>
             </div>
+
             <MaGiamGiaModal
                 show={showModal}
                 handleClose={() => setShowModal(false)}
                 mode={mode}
-                MaGiamGiaData={selectedIndex}
+                MaGiamGiaData={selectedItem}
+                onSave={handleSave}
             />
         </section>
     );
