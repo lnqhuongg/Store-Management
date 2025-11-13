@@ -130,3 +130,28 @@ export async function searchByCategoryIDAndSortOrderAndKeyword(category_id: stri
         throw error;
     }
 }
+
+export async function filterByCategory(categoryID: string) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/category/${categoryID}`, {
+            method: 'GET',
+        }); 
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error filtering by categoryID ${categoryID}:`, error);
+        throw error;
+    }
+}
+export async function filterBySupplier(supplierID: string) {
+    try {
+        const response = await fetch(`https://localhost:7107/api/products/supplier/${supplierID}`, {
+            method: 'GET',
+        }); 
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error filtering by supplierID ${supplierID}:`, error);
+        throw error;
+    }
+}

@@ -173,7 +173,7 @@ export default function DSSanPham() {
                 products.length === 0 ? (
                     <p className="text-center mt-4">Không tìm thấy sản phẩm nào.</p>
                 ) : (
-                    <div  className="product-list row row-cols-4 overflow-auto" style={{ maxHeight: "566px" }}>
+                    <div  className="product-list row row-cols-4 overflow-auto mt-3" style={{ maxHeight: "566px" }}>
                         {products.map((product) => (
                             <div key={product.productID} className="col mb-3">
                             <div
