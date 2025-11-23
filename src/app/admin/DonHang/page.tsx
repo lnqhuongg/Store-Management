@@ -1,115 +1,131 @@
 'use client';
-
 import { useEffect, useState } from 'react';
-import SearchInput from '@/app/components/MUI/Input/SearchInput';
-import TableComponent from '@/app/components/MUI/Table/Table';
-import PaginationComponent from '@/app/components/Pagination/Pagination';
-import { getAll as getAllOrders } from '@/app/controllers/DonHang/DonHangController';
+
+import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
+import SearchInput from "@/app/components/MUI/Input/SearchInput";
+import TableComponent from "@/app/components/MUI/Table/Table";
+import PaginationComponent from "@/app/components/Pagination/Pagination";
+import DonHangModal from "@/app/components/MUI/Modal/DonHangModal"; // <-- File modal mới
+import { getAll, getById, create } from '@/app/controllers/DonHang/DonHangController';
 
 export default function DonHangPage() {
-  const columns = ['Mã đơn', 'Khách hàng', 'Nhân viên', 'Giảm giá', 'Tổng tiền', 'Ngày mua'];
-  const dataKeys = ['orderId', 'customerName', 'employeeName', 'discountAmount', 'totalAmount', 'orderDate'];
+    // Header cho table Đơn hàng
+    const columns = ['Mã đơn', 'Khách hàng', 'Ngày đặt', 'Tổng tiền'];
+    // Key phải trùng với DTO trả về từ API getAll
+    const dataKeys = ['orderId', 'customerName', 'orderDate', 'totalAmount'];
 
-  const [data, setData] = useState<any[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+    const [data, setData] = useState<any[]>([]);
+    const [keyword, setKeyword] = useState<string>("");
 
-  // filters
-  const [keyword, setKeyword]   = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo]     = useState('');
-  const [minTotal, setMinTotal] = useState<string>('');
-  const [maxTotal, setMaxTotal] = useState<string>('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
-  const pageSize = 5;
+    // Load data lên bảng
+    const loadData = async () => {
+        try {
+            const result = await getAll(currentPage, 5, keyword);
+            
+            // Format dữ liệu hiển thị (Ngày tháng, Tiền tệ)
+            const formattedData = result.data.map((item: any) => ({
+                ...item,
+                customerName: item.customerName || "Khách vãng lai",
+                orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('vi-VN') : '',
+                totalAmount: item.totalAmount?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+            }));
 
-  const loadData = async () => {
-    const result = await getAllOrders(
-      currentPage,
-      pageSize,
-      {
-        keyword,
-        dateFrom,
-        dateTo,
-        minTotal: minTotal ? Number(minTotal) : undefined,
-        maxTotal: maxTotal ? Number(maxTotal) : undefined,
-      }
+            setData(formattedData);
+            setTotalPages(result.pagination.totalPages || 1);
+        } catch (err: any) {
+            alert(err.message || 'Lỗi tải dữ liệu');
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, [currentPage, keyword]);
+
+    // ----------------------------------------
+    const [showModal, setShowModal] = useState(false);
+    // mode 'add' là tạo mới, 'view' là xem chi tiết
+    const [mode, setMode] = useState<'add' | 'view'>('add'); 
+    const [selectedItem, setSelectedItem] = useState<any>(null);
+
+    // Khi bấm nút thêm
+    const handleAdd = () => {
+        setMode('add');
+        setSelectedItem(null);
+        setShowModal(true);
+    };
+
+    // Khi bấm nút sửa (Ở đây là Xem chi tiết)
+    const handleView = async (item: any) => {
+        try {
+            const detail = await getById(item.orderId); 
+            setMode('view');
+            setSelectedItem(detail);
+            setShowModal(true);
+        } catch (err: any) {
+            alert(err.message || 'Không tải được thông tin đơn hàng!');
+        }
+    };
+
+    // Lưu dữ liệu (Chỉ dùng cho Tạo mới)
+    const handleSave = async (formData: any) => {
+        try {
+            if (mode === 'add') {
+                await create(formData);
+                alert("Tạo đơn hàng thành công!");
+            } 
+            // Không xử lý update ở đây
+            
+            await loadData(); // RELOAD BẢNG
+        } catch (err: any) {
+            alert(err.message || 'Lỗi khi tạo đơn hàng!');
+        }
+    };
+
+    // Không có handleDelete vì đơn hàng hạn chế xóa
+
+    return (
+        <section>
+            <h4>Quản lý Đơn Hàng</h4>
+            <div className="donhang py-4">
+                <div>
+                    <ButtonAdd onClick={handleAdd} />
+                </div>
+                <div>
+                    <SearchInput
+                        onSearch={(value) => {
+                            setKeyword(value);
+                            setCurrentPage(1); 
+                        }}
+                    />
+                </div>
+                <div>
+                    <TableComponent
+                        columns={columns}
+                        dataKeys={dataKeys}
+                        data={data}
+                        onEdit={(item) => handleView(item)} // Nút bút chì dùng để xem chi tiết
+                        onDelete={() => {}} // Tắt nút xóa hoặc để trống
+                    />
+                </div>
+                <div>
+                    <PaginationComponent
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={(page) => setCurrentPage(page)}
+                    />
+                </div>
+            </div>
+            
+            <DonHangModal
+                show={showModal}
+                handleClose={() => setShowModal(false)}
+                mode={mode}
+                DonHangData={selectedItem}
+                onSave={handleSave}
+            />
+        </section>
     );
-    setData(result.data);
-    setTotalPages(result.pagination.totalPages || 1);
-  };
-
-  useEffect(() => { loadData(); }, [currentPage]); // đổi trang -> load
-
-  const applyFilters = () => {
-    setCurrentPage(1);
-    loadData();
-  };
-
-  const clearFilters = () => {
-    setKeyword('');
-    setDateFrom('');
-    setDateTo('');
-    setMinTotal('');
-    setMaxTotal('');
-    setCurrentPage(1);
-    loadData();
-  };
-
-  return (
-    <section>
-      <h4>Quản lý Đơn hàng</h4>
-
-      <div className="py-4 space-y-3">
-        <SearchInput
-          onSearch={(value) => {
-            setKeyword(value);
-            setCurrentPage(1);
-            applyFilters();
-          }}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end bg-gray-50 p-3 rounded">
-          <div>
-            <label className="block text-sm mb-1">Từ ngày</label>
-            <input type="date" value={dateFrom} onChange={(e)=>setDateFrom(e.target.value)}
-                   className="border rounded px-3 py-2 w-full" />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Đến ngày</label>
-            <input type="date" value={dateTo} onChange={(e)=>setDateTo(e.target.value)}
-                   className="border rounded px-3 py-2 w-full" />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Tổng tiền từ</label>
-            <input type="number" min={0} value={minTotal} onChange={(e)=>setMinTotal(e.target.value)}
-                   className="border rounded px-3 py-2 w-full" />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Tổng tiền đến</label>
-            <input type="number" min={0} value={maxTotal} onChange={(e)=>setMaxTotal(e.target.value)}
-                   className="border rounded px-3 py-2 w-full" />
-          </div>
-          <div className="md:col-span-2 flex gap-2">
-            <button onClick={applyFilters} className="px-4 py-2 rounded bg-black text-white">Lọc</button>
-            <button onClick={clearFilters} className="px-4 py-2 rounded border">Xoá lọc</button>
-          </div>
-        </div>
-
-        <TableComponent
-          columns={columns}
-          dataKeys={dataKeys}
-          data={data}
-          onEdit={undefined}
-          onDelete={undefined}
-        />
-
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={(p) => setCurrentPage(p)}
-        />
-      </div>
-    </section>
-  );
 }

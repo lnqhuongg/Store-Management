@@ -1,42 +1,70 @@
 import { apiFetch } from "@/app/lib/api";
 
-export type OrderFilters = {
-  keyword?: string;
-  dateFrom?: string; // yyyy-MM-dd
-  dateTo?: string;   // yyyy-MM-dd
-  minTotal?: number;
-  maxTotal?: number;
-};
-
-// ===== HÀM LỌC RIÊNG -> build query =====
-function buildFilterQuery(page: number, pageSize: number, f: OrderFilters) {
-  const p = new URLSearchParams();
-  p.append("page", String(page));
-  p.append("pageSize", String(pageSize));
-  if (f.keyword)  p.append("keyword", f.keyword.trim());
-  if (f.dateFrom) p.append("dateFrom", f.dateFrom);
-  if (f.dateTo)   p.append("dateTo",   f.dateTo);
-  if (typeof f.minTotal === "number") p.append("minTotal", String(f.minTotal));
-  if (typeof f.maxTotal === "number") p.append("maxTotal", String(f.maxTotal));
-  return p.toString();
+// 1. Định nghĩa Interface (DTO)
+export interface IChiTietDonHang {
+    customerID: number;
+    productName?: string;
+    quantity: number;
+    price: number;
+    subtotal?: number;
 }
 
-// ===== GETALL GỌI HÀM LỌC =====
-export async function getAll(page=1, pageSize=5, filters: {
-  keyword?: string; dateFrom?: string; dateTo?: string; minTotal?: number; maxTotal?: number;
-}) {
-  const qs = buildFilterQuery(page, pageSize, filters);
-  const res = await apiFetch<any>(`/orders?${qs}`);
-  return {
-    data: res.dataDTO?.data || [],
-    pagination: {
-      currentPage: res.dataDTO?.page ?? 1,
-      totalPages:  res.dataDTO?.totalPages ?? 1,
-    },
-  };
+export interface IDonHang {
+    orderId?: number;
+    customerId?: number;
+    customerName?: string;
+    orderDate?: string;
+    totalAmount?: number;
+    items?: IChiTietDonHang[]; // Danh sách sản phẩm mua
 }
 
-export async function getById(id: number) {
-  const res = await apiFetch<any>(`/orders/${id}`);
-  return res.dataDTO;
+// === GET ALL (Có phân trang & tìm kiếm) ===
+export async function getAll(page: number = 1, pageSize: number = 5, keyword: string = "") {
+    const params = new URLSearchParams();
+    params.append('page', page.toString());
+    params.append('pageSize', pageSize.toString());
+    
+    // Backend lọc theo keyword (Mã đơn hoặc Tên khách)
+    if (keyword) params.append('keyword', keyword);
+
+    // URL: /orders (khớp với Backend DonHangController)
+    const res = await apiFetch<any>(`/orders?${params.toString()}`); 
+    return {
+        data: res.dataDTO?.data || [],
+        pagination: {
+            currentPage: res.dataDTO?.page ?? 1,
+            totalPages: res.dataDTO?.totalPages ?? 1
+        }
+    };
+}
+
+// === GET BY ID ===
+export async function getById(id: number): Promise<IDonHang> {
+    const res = await apiFetch<any>(`/orders/${id}`);
+    return res.dataDTO;
+}
+
+// === CREATE ===
+export async function create(dto: IDonHang): Promise<IDonHang> {
+    const res = await apiFetch<any>('/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }, // Quan trọng để Backend nhận [FromBody]
+        body: JSON.stringify(dto),
+    });
+    return res.dataDTO;
+}
+
+// === KHÔNG CÓ UPDATE / DELETE (Theo yêu cầu nghiệp vụ đơn hàng thường không sửa xóa lung tung) ===
+
+// === HELPERS: Lấy dữ liệu cho Dropdown trong Modal ===
+export async function getCustomersForDropdown() {
+    // Lấy 100 khách hàng để chọn
+    const res = await apiFetch<any>(`/customers?page=1&pageSize=100`);
+    return res.dataDTO?.data || [];
+}
+
+export async function getProductsForDropdown() {
+    // Lấy 100 sản phẩm để chọn
+    const res = await apiFetch<any>(`/products?page=1&pageSize=100`);
+    return res.dataDTO?.data || [];
 }
