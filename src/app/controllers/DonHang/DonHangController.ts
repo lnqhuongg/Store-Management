@@ -1,34 +1,50 @@
 import { apiFetch } from "@/app/lib/api";
 
-// 1. Định nghĩa Interface (DTO)
+// 1. DTO Chi tiết đơn hàng (Mapping đúng tên biến API trả về)
 export interface IChiTietDonHang {
-    customerID: number;
-    productName?: string;
+    productID: number;      // ID sản phẩm (Chữ D hoa khớp API)
+    productName?: string;   // Tên sản phẩm
     quantity: number;
     price: number;
     subtotal?: number;
 }
 
+// 2. DTO Đơn Hàng
 export interface IDonHang {
     orderId?: number;
     customerId?: number;
     customerName?: string;
     orderDate?: string;
     totalAmount?: number;
-    items?: IChiTietDonHang[]; // Danh sách sản phẩm mua
+    discountAmount?: number;
+    paymentStatus?: string;
+    items?: IChiTietDonHang[];
 }
 
-// === GET ALL (Có phân trang & tìm kiếm) ===
-export async function getAll(page: number = 1, pageSize: number = 5, keyword: string = "") {
+// 3. Interface Bộ lọc (Chỉ dùng cho Đơn hàng)
+export interface IOrderFilter {
+    keyword?: string;
+    dateFrom?: string;
+    dateTo?: string;
+    minTotal?: number;
+    maxTotal?: number;
+}
+
+// === GET ALL ===
+export async function getAll(page: number = 1, pageSize: number = 5, filter: IOrderFilter = {}) {
     const params = new URLSearchParams();
     params.append('page', page.toString());
     params.append('pageSize', pageSize.toString());
-    
-    // Backend lọc theo keyword (Mã đơn hoặc Tên khách)
-    if (keyword) params.append('keyword', keyword);
 
-    // URL: /orders (khớp với Backend DonHangController)
-    const res = await apiFetch<any>(`/orders?${params.toString()}`); 
+    // Logic lọc nâng cao của Đơn hàng
+    if (filter.keyword) params.append('keyword', filter.keyword);
+    if (filter.dateFrom) params.append('dateFrom', filter.dateFrom);
+    if (filter.dateTo) params.append('dateTo', filter.dateTo);
+    if (filter.minTotal) params.append('minTotal', filter.minTotal.toString());
+    if (filter.maxTotal) params.append('maxTotal', filter.maxTotal.toString());
+
+    const res = await apiFetch<any>(`/orders?${params.toString()}`);
+    
     return {
         data: res.dataDTO?.data || [],
         pagination: {
@@ -42,29 +58,4 @@ export async function getAll(page: number = 1, pageSize: number = 5, keyword: st
 export async function getById(id: number): Promise<IDonHang> {
     const res = await apiFetch<any>(`/orders/${id}`);
     return res.dataDTO;
-}
-
-// === CREATE ===
-export async function create(dto: IDonHang): Promise<IDonHang> {
-    const res = await apiFetch<any>('/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // Quan trọng để Backend nhận [FromBody]
-        body: JSON.stringify(dto),
-    });
-    return res.dataDTO;
-}
-
-// === KHÔNG CÓ UPDATE / DELETE (Theo yêu cầu nghiệp vụ đơn hàng thường không sửa xóa lung tung) ===
-
-// === HELPERS: Lấy dữ liệu cho Dropdown trong Modal ===
-export async function getCustomersForDropdown() {
-    // Lấy 100 khách hàng để chọn
-    const res = await apiFetch<any>(`/customers?page=1&pageSize=100`);
-    return res.dataDTO?.data || [];
-}
-
-export async function getProductsForDropdown() {
-    // Lấy 100 sản phẩm để chọn
-    const res = await apiFetch<any>(`/products?page=1&pageSize=100`);
-    return res.dataDTO?.data || [];
 }
