@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Authenticate  } from "@/app/controllers/Authentication/AuthenticationController";
 
 export interface Account {
     id: string;
@@ -10,20 +11,6 @@ export interface Account {
     role: "admin" | "staff";
 }
 
-const demoAdminAccount: Account = {
-    id: "A001",
-    username: "admin",
-    password: "123",
-    role: "admin",
-};
-
-const demoStaffAccount: Account = {
-    id: "A001",
-    username: "staff",
-    password: "123",
-    role: "staff",
-};
-
 export default function LoginPage() {
     const router = useRouter();
     const [username, setUsername] = useState("");
@@ -31,38 +18,45 @@ export default function LoginPage() {
     const [errors, setErrors] = useState({ username: "", password: "" });
     const [loginError, setLoginError] = useState(""); // lỗi sai tên đăng nhập/mật khẩu
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         const newErrors = { username: "", password: "" };
-        setLoginError(""); // reset lỗi cũ
+        setLoginError("");
 
-        // Kiểm tra để trống
         if (!username.trim()) newErrors.username = "Vui lòng nhập tên đăng nhập";
         if (!password.trim()) newErrors.password = "Vui lòng nhập mật khẩu";
+
         setErrors(newErrors);
 
-        // Nếu có lỗi trống thì dừng lại
         if (newErrors.username || newErrors.password) return;
 
-        // nếu username & password nhập vào trùng với username & password của admin 
-        // chuyển đến trang admin --- này mới là data mẫu, mốt còn duyệt xem role của Account là gì
-        // tương tự cho staff 
-        if (
-            username === demoAdminAccount.username &&
-            password === demoAdminAccount.password
-        ) {
-            router.push("/admin/ThongKe");
-        } else if (
-            username === demoStaffAccount.username &&
-            password === demoStaffAccount.password
-        ) {
-            router.push("/staff");
-        } else {
-            setLoginError("Sai tên đăng nhập hoặc mật khẩu!");
+        // Gọi API thật
+        const res = await Authenticate({ username, password });
+
+        
+
+        // Nếu backend trả lỗi
+        if (!res.success) {
+            alert(res.message || "Đăng nhập thất bại!");
             return;
         }
 
-        // Nếu đúng → đăng nhập thành công
+        // Lấy user
+        const user = res.dataDTO;
 
+        // Nếu status = 0 → Tài khoản khóa
+        if (user.status === 0) {
+            setLoginError("Tài khoản đã bị khóa!");
+            return;
+        }
+
+        // ==== Điều hướng theo role ====
+        if (user.role === "admin") {
+            router.push("/admin/ThongKe");
+        } else if (user.role === "staff") {
+            router.push("/staff");
+        } else {
+            setLoginError(`Không xác định role: ${user.role}`);
+        }
     };
 
     return (

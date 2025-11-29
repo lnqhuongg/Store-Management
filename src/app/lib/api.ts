@@ -30,9 +30,9 @@ export async function apiFetch<T>(
     }
 
     // trả lỗi khác ngoài Ok (200) (tựa bên backend)
-    if (!res.ok) {
-        throw new Error(data.message || data.error || 'Lỗi server');
-    }
+    // if (!res.ok) {
+    //     throw new Error(data.message || data.error || 'Lỗi server');
+    // }
 
     return data as T;
 }
