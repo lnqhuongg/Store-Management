@@ -29,21 +29,30 @@ export default function TableComponent({
     }, obj);
   };
   const formatPrice = (price: number | string, currency: string = 'VND'): string => {
-        const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-        
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: currency,
-        }).format(numPrice);
-    };
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: currency,
+    }).format(numPrice);
+  };
   const renderCellValue = (columnName: string, key: string, item: any) => {
     const value = getNestedValue(item, key);
-    
+
     // Kiểm tra nếu cột là "Đơn giá" hoặc key chứa "price"
-    if (columnName.toLowerCase().includes('giá') || key.toLowerCase().includes('price')) {
+    const name = columnName.toLowerCase();
+    const k = key.toLowerCase();
+
+    if (
+      (name.includes('giá') || k.includes('price')) &&
+      !name.includes('mã giảm') && // loại trừ 'mã giảm giá'
+      !k.includes('discount') &&   // loại trừ 'discount'
+      !k.includes('code')          // loại trừ 'code' nếu là discount code
+    ) {
       return formatPrice(value);
     }
-    
+
+
     return value;
   };
 
