@@ -2,11 +2,27 @@ import { apiFetch } from "@/app/lib/api";
 
 // 1. DTO Chi tiết đơn hàng (Mapping đúng tên biến API trả về)
 export interface IChiTietDonHang {
-    productID: number;      // ID sản phẩm (Chữ D hoa khớp API)
-    productName?: string;   // Tên sản phẩm
+    orderItemId?: number;
+    orderId?: number;
+    productId?: number;
     quantity: number;
     price: number;
     subtotal?: number;
+
+    product?: {
+        productID: number;
+        supplierID?: number;
+        categoryID?: number;
+        productName: string;
+        barcode: string;
+        price: number;
+        unit: string;
+        imageUrl?: string;
+        category?: {
+            categoryId: number;
+            categoryName: string;
+        };
+    };
 }
 
 // 2. DTO Đơn Hàng
@@ -14,12 +30,23 @@ export interface IDonHang {
     orderId?: number;
     customerId?: number;
     customerName?: string;
+    userId?: number;
+    userName?: string;
+
     orderDate?: string;
+    status?: string;
+
     totalAmount?: number;
     discountAmount?: number;
-    paymentStatus?: string;
+
+    promoId?: number | null;
+    promotion?: IPromotion | null;
+
     items?: IChiTietDonHang[];
+    payments?: IPayments[];
 }
+
+
 
 // 3. Interface Bộ lọc (Chỉ dùng cho Đơn hàng)
 export interface IOrderFilter {
@@ -28,6 +55,27 @@ export interface IOrderFilter {
     dateTo?: string;
     minTotal?: number;
     maxTotal?: number;
+}
+
+export interface IPayments {
+    paymentId?: number;
+    orderId?: number;
+    amount?: number;
+    paymentMethod?: string;
+    paymentDate?: string;
+}
+
+export interface IPromotion {
+    promoId: number;
+    promoCode: string;
+    description?: string;
+    discountType: "percentage" | "fixed";
+    discountValue: number;
+    startDate: string;
+    endDate: string;
+    minOrderAmount?: number;
+    usageLimit?: number;
+    usedCount?: number;
 }
 
 // === GET ALL ===
@@ -44,7 +92,7 @@ export async function getAll(page: number = 1, pageSize: number = 5, filter: IOr
     if (filter.maxTotal) params.append('maxTotal', filter.maxTotal.toString());
 
     const res = await apiFetch<any>(`/orders?${params.toString()}`);
-    
+
     return {
         data: res.dataDTO?.data || [],
         pagination: {

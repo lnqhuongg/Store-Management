@@ -5,19 +5,19 @@ import { Row, Col, Form } from 'react-bootstrap';
 import SearchInput from "@/app/components/MUI/Input/SearchInput"; // Component chung, không sửa
 import TableComponent from "@/app/components/MUI/Table/Table";     // Component chung, không sửa
 import PaginationComponent from "@/app/components/Pagination/Pagination"; // Component chung, không sửa
-import DonHangModal from "@/app/components/MUI/Modal/DonHangModal"; 
+import DonHangModal from "@/app/components/MUI/Modal/DonHangModal";
 
 import { getAll, getById, IOrderFilter, IDonHang } from '@/app/controllers/DonHang/DonHangController';
 
 export default function DonHangPage() {
     // Cấu hình bảng
     const columns = ['Mã đơn', 'Khách hàng', 'Ngày đặt', 'Tổng tiền', 'Trạng thái'];
-    const dataKeys = ['orderId', 'customerName', 'orderDate', 'totalAmount', 'paymentStatus'];
+    const dataKeys = ['orderId', 'customerName', 'orderDate', 'totalAmount', 'orderStatus'];
 
     const [data, setData] = useState<IDonHang[]>([]);
-    
+
     // State quản lý bộ lọc (Keyword + Ngày + Tiền)
-    const [filter, setFilter] = useState<IOrderFilter>({ 
+    const [filter, setFilter] = useState<IOrderFilter>({
         keyword: "",
         dateFrom: "",
         dateTo: "",
@@ -32,13 +32,22 @@ export default function DonHangPage() {
     const loadData = async () => {
         try {
             const result = await getAll(currentPage, 5, filter);
-            
+
             const formattedData = result.data.map((item: any) => ({
                 ...item,
-                customerName: item.customerName || "Khách vãng lai", 
+                customerName: item.customerName || "Khách vãng lai",
                 orderDate: item.orderDate ? new Date(item.orderDate).toLocaleDateString('vi-VN') : '',
-                totalAmount: item.totalAmount?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+                totalAmount: item.totalAmount?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }),
+                orderStatus: item.status === 'paid'
+                    ? '<span class="badge bg-success">Đã thanh toán</span>'
+                    : item.status === 'pending'
+                        ? '<span class="badge bg-warning text-dark">Chờ xác nhận</span>'
+                        : item.status === 'canceled'
+                            ? '<span class="badge bg-danger">Đã huỷ</span>'
+                            : '<span class="badge bg-secondary">Không xác định</span>'
             }));
+
+
 
             setData(formattedData);
             setTotalPages(result.pagination.totalPages || 1);
@@ -68,7 +77,7 @@ export default function DonHangPage() {
     return (
         <section className="p-3">
             <h4 className="mb-4 font-bold text-xl">Quản lý Đơn Hàng</h4>
-            
+
             <div className="bg-white p-3 rounded shadow-sm mb-3">
                 {/* 1. Ô TÌM KIẾM (Dùng component chung) */}
                 <div className="mb-3" style={{ maxWidth: '400px' }}>
@@ -85,30 +94,30 @@ export default function DonHangPage() {
                 <Row className="g-2 mb-3">
                     <Col md={3}>
                         <Form.Label className="small fw-bold text-muted">Từ ngày</Form.Label>
-                        <Form.Control 
+                        <Form.Control
                             type="date" size="sm"
-                            onChange={(e) => setFilter({...filter, dateFrom: e.target.value})}
+                            onChange={(e) => setFilter({ ...filter, dateFrom: e.target.value })}
                         />
                     </Col>
                     <Col md={3}>
                         <Form.Label className="small fw-bold text-muted">Đến ngày</Form.Label>
-                        <Form.Control 
+                        <Form.Control
                             type="date" size="sm"
-                            onChange={(e) => setFilter({...filter, dateTo: e.target.value})}
+                            onChange={(e) => setFilter({ ...filter, dateTo: e.target.value })}
                         />
                     </Col>
                     <Col md={3}>
                         <Form.Label className="small fw-bold text-muted">Tiền tối thiểu</Form.Label>
-                        <Form.Control 
+                        <Form.Control
                             type="number" size="sm" placeholder="0"
-                            onChange={(e) => setFilter({...filter, minTotal: Number(e.target.value) || undefined})}
+                            onChange={(e) => setFilter({ ...filter, minTotal: Number(e.target.value) || undefined })}
                         />
                     </Col>
                     <Col md={3}>
                         <Form.Label className="small fw-bold text-muted">Tiền tối đa</Form.Label>
-                        <Form.Control 
+                        <Form.Control
                             type="number" size="sm" placeholder="VNĐ"
-                            onChange={(e) => setFilter({...filter, maxTotal: Number(e.target.value) || undefined})}
+                            onChange={(e) => setFilter({ ...filter, maxTotal: Number(e.target.value) || undefined })}
                         />
                     </Col>
                 </Row>
@@ -121,7 +130,6 @@ export default function DonHangPage() {
                     dataKeys={dataKeys}
                     data={data}
                     onEdit={(item) => handleViewDetail(item)} // Nút Edit đóng vai trò Xem chi tiết
-                    onDelete={() => {}} // Tắt chức năng xóa
                 />
             </div>
 

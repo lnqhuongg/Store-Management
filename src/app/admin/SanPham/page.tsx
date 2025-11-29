@@ -265,7 +265,7 @@ export default function SanPham() {
                         dataKeys={dataKeys}
                         data={listProducts}
                         onEdit={(item) => handleEdit(item)} // truyền vào item/đối tượng item, mốt truyền vào id
-                        onDelete={(item) => handleDelete(item)}
+                        // onDelete={(item) => handleDelete(item)}
                     />
                 </div>
                 <div>

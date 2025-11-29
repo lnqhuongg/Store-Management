@@ -31,7 +31,22 @@ export default function NhanVienPage() {
             if (roleFilter) filter.role = roleFilter;
 
             const result = await getAll(currentPage, 5, filter);
-            setData(result.data);
+
+            const formattedData = result.data.map((item: any) => ({
+                ...item,
+
+                role:
+                    item.role === "admin"
+                        ? '<span className="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800"> Quản trị </span>'
+                        : '<span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800"> Nhân viên </span>',
+                status: item.status === 1
+                    ? '<span class="badge bg-success">Hoạt động</span>'
+                    : item.status === 0
+                        ? '<span class="badge bg-secondary">Tạm ngưng</span>'
+                        : '<span class="badge bg-secondary">Không xác định</span>'
+            }));
+
+            setData(formattedData);
             setTotalPages(result.pagination.totalPages || 1);
         } catch (err: any) {
             alert(err.message || 'Lỗi tải danh sách nhân viên!');
@@ -62,7 +77,7 @@ export default function NhanVienPage() {
     const handleSave = async (formData: any) => {
         try {
             if (mode === 'add') {
-                await create(formData as any); 
+                await create(formData as any);
                 alert("Thêm nhân viên thành công!");
             } else {
                 if (!selectedItem?.userId) throw new Error("Không tìm thấy ID nhân viên");
@@ -125,21 +140,9 @@ export default function NhanVienPage() {
                     <TableComponent
                         columns={columns}
                         dataKeys={dataKeys}
-                        data={data.map(item => ({
-                            ...item,
-                            role: (
-                                <span className={`px-2 py-1 rounded text-xs font-medium ${item.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
-                                    {item.role === 'admin' ? 'Quản trị' : 'Nhân viên'}
-                                </span>
-                            ),
-                            status: (
-                                <span className={`px-2 py-1 rounded text-xs font-medium ${item.status === 1 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                    {item.status === 1 ? 'Hoạt động' : 'Ngừng'}
-                                </span>
-                            )
-                        }))}
+                        data={data}
                         onEdit={handleEdit}
-                        onDelete={handleDelete}
+                    // onDelete={handleDelete}
                     />
                 </div>
 

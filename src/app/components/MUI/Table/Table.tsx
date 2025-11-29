@@ -1,6 +1,7 @@
 'use client';
 import { Table } from 'react-bootstrap';
 import ButtonEdit from '@/app/components/MUI/Button/ButtonEdit';
+import ButtonDetail from '@/app/components/MUI/Button/ButtonDetail';
 import ButtonDelete from '@/app/components/MUI/Button/ButtonDelete';
 
 interface TableComponentProps {
@@ -20,6 +21,7 @@ export default function TableComponent({
   showActions = true,
   onEdit,
   onDelete,
+  onDetail,
 }: TableComponentProps) {
   const getNestedValue = (obj: any, path: string) => {
     return path.split('.').reduce((current, key) => {
@@ -73,14 +75,28 @@ export default function TableComponent({
             data.map((item, idx) => (
               <tr key={idx}>
                 {dataKeys.map((key, i) => (
-                  <td key={i}>{renderCellValue(columns[i], key, item)}</td>
+                  <td key={i} dangerouslySetInnerHTML={{ __html: renderCellValue(columns[i], key, item) }} />
+
                 ))}
 
                 {/* có hành động thêm / xóa / sửa */}
                 {showActions && (
                   <td>
-                    <ButtonEdit onClick={() => onEdit?.(item)} /> {/* 👈 gọi cha, truyền item */}
-                    {onDelete && <ButtonDelete onClick={() => onDelete?.(item)} />} {/* 👈 chỉ hiển thị nếu onDelete được truyền */}
+
+                    {/* Hiện nút Edit nếu cha truyền vào */}
+                    {onEdit && (
+                      <ButtonEdit onClick={() => onEdit(item)} />
+                    )}
+
+                    {/* Hiện nút Detail nếu cha truyền */}
+                    {onDetail && (
+                      <ButtonDetail onClick={() => onDetail(item)} />
+                    )}
+
+                    {/* Hiện nút Delete nếu cha truyền */}
+                    {onDelete && (
+                      <ButtonDelete onClick={() => onDelete(item)} />
+                    )}
                   </td>
                 )}
               </tr>

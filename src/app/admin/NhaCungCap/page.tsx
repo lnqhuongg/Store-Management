@@ -9,26 +9,34 @@ import NhaCungCapModal from "@/app/components/MUI/Modal/NhaCungCapModal";
 import { getAll, getById, create, update, deleteItem } from '@/app/controllers/NhaCungCap/NhaCungCapController';
 
 export default function NhaCungCapPage() {
-      // header cho table Supplier
-      const columns = ['Mã NCC', 'Tên nhà cung cấp', 'Email', 'SĐT', 'Địa chỉ', 'Status'];
-      const dataKeys = ['supplierId', 'name', 'email', 'phone', 'address', 'status'];
+  // header cho table Supplier
+  const columns = ['Mã NCC', 'Tên nhà cung cấp', 'Email', 'SĐT', 'Địa chỉ', 'Status'];
+  const dataKeys = ['supplierId', 'name', 'email', 'phone', 'address', 'status'];
 
-      // khởi tạo data để mỗi khi qua phân trang khác, 10 bản ghi khác lại được lấy lên từ databasee
-      const [data, setData] = useState<any[]>([]);
-      const [keyword, setKeyword] = useState<string>("");
+  // khởi tạo data để mỗi khi qua phân trang khác, 10 bản ghi khác lại được lấy lên từ databasee
+  const [data, setData] = useState<any[]>([]);
+  const [keyword, setKeyword] = useState<string>("");
 
-      // khởi tạo usestate cho currentpage & totalpages
-      const [currentPage, setCurrentPage] = useState(1);
-      const [totalPages, setTotalPages] = useState(1);
+  // khởi tạo usestate cho currentpage & totalpages
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   // hàm để load data lên table
   const loadData = async () => {
     try {
-        const result = await getAll(currentPage, 10, keyword);
-        setData(result.data);
-        setTotalPages(result.pagination?.totalPages || 1);
+      const result = await getAll(currentPage, 10, keyword);
+      const formattedData = result.data.map((item: any) => ({
+        ...item,
+        status: item.status === 1
+          ? '<span class="badge bg-success">Hoạt động</span>'
+          : item.status === 0
+            ? '<span class="badge bg-secondary">Tạm ngưng</span>'
+            : '<span class="badge bg-secondary">Không xác định</span>'
+      }));
+      setData(formattedData);
+      setTotalPages(result.pagination?.totalPages || 1);
     } catch (err: any) {
-        alert(err.message || 'Lỗi tải dữ liệu');
+      alert(err.message || 'Lỗi tải dữ liệu');
     }
   };
 
@@ -74,11 +82,10 @@ export default function NhaCungCapPage() {
         await create(formData);
         alert("Thêm nhà cung cấp thành công!");
       } else {
-        if (!selectedItem?.supplierId)
-        { 
+        if (!selectedItem?.supplierId) {
           throw new Error("Không tìm thấy ID nhà cung cấp");
         }
-        await update(selectedItem.supplierId, 
+        await update(selectedItem.supplierId,
           {
             supplierId: selectedItem.supplierId,
             name: formData.name.trim(),
@@ -130,7 +137,7 @@ export default function NhaCungCapPage() {
             dataKeys={dataKeys}
             data={data}
             onEdit={(item) => handleEdit(item)}
-            onDelete={(item) => handleDelete(item)}
+            // onDelete={(item) => handleDelete(item)}
           />
         </div>
         <div>

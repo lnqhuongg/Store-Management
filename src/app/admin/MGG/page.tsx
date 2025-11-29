@@ -43,7 +43,15 @@ export default function MaGiamGia() {
         try {
             const resp = await getAll(page, pageSize, keyword, discountType);
             console.log('getAll response', resp);
-            setData(resp.data || []);
+            const formattedData = resp.data.map((item: any) => ({
+                ...item,
+                status: item.status === 'active'
+                    ? '<span class="badge bg-success">Hoạt động</span>'
+                    : item.status === 'inactive'
+                        ? '<span class="badge bg-danger">Hết hạn</span>'
+                        : '<span class="badge bg-secondary">Không xác định</span>'
+            }));
+            setData(formattedData);
             setCurrentPage(resp.pagination?.currentPage || page);
             setTotalPages(resp.pagination?.totalPages || 1);
         } catch (err) {

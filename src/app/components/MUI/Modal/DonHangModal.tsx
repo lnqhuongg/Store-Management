@@ -24,16 +24,57 @@ export default function DonHangModal({ show, handleClose, orderData }: ModalProp
                     <h6 className="text-uppercase fw-bold text-secondary mb-3">Thông tin đơn hàng</h6>
                     <Row>
                         <Col md={6}>
-                            <p className="mb-1"><strong>Khách hàng:</strong> {orderData.customerName || "Khách lẻ"}</p>
-                            <p className="mb-1"><strong>Ngày đặt:</strong> {new Date(orderData.orderDate || "").toLocaleString('vi-VN')}</p>
+                            <p className="mb-1">
+                                <strong>Khách hàng:</strong> {orderData.customerName || "Khách vãng lai"}
+                            </p>
+
+                            <p className="mb-1">
+                                <strong>Ngày đặt:</strong>
+                                {new Date(orderData.orderDate || "").toLocaleString('vi-VN')}
+                            </p>
+                            {/* PAYMENT METHOD */}
+                            {orderData.payments && orderData.payments.length > 0 && (
+                                <p className="mb-1">
+                                    <strong>Phương thức thanh toán:</strong>{" "}
+                                    {{
+                                        cash: "Tiền mặt",
+                                        "bank_transfer": "Chuyển khoản",
+                                        "e-wallet": "Ví điện tử",
+                                        "card": "Thẻ ngân hàng"
+                                    }[orderData.payments[0].paymentMethod as string] || "Không xác định"}
+                                </p>
+                            )}
                         </Col>
+
                         <Col md={6} className="text-md-end">
-                            <p className="mb-1"><strong>Trạng thái:</strong> <span className="badge bg-success">Hoàn thành</span></p>
-                            {/* Nếu backend có trả về Nhân viên thì hiện ở đây */}
-                            {/* <p className="mb-1"><strong>Nhân viên:</strong> {orderData.userName}</p> */}
+                            {/* ===== TRẠNG THÁI ĐƠN HÀNG ===== */}
+                            <p className="mb-1">
+                                <strong>Trạng thái:</strong>{" "}
+                                {{
+                                    pending: (
+                                        <span className="badge bg-warning text-dark">Chờ xác nhận</span>
+                                    ),
+                                    paid: (
+                                        <span className="badge bg-success">Đã thanh toán</span>
+                                    ),
+                                    canceled: (
+                                        <span className="badge bg-danger">Đã hủy</span>
+                                    )
+                                }[orderData.status as string] || (
+                                        <span className="badge bg-secondary">Không xác định</span>
+                                    )}
+                            </p>
+
+                            {/* ===== NHÂN VIÊN ===== */}
+                            {orderData.userName && (
+                                <p className="mb-1">
+                                    <strong>Nhân viên:</strong> {orderData.userName}
+                                </p>
+                            )}
                         </Col>
                     </Row>
                 </div>
+
 
                 {/* 2. DANH SÁCH SẢN PHẨM */}
                 <h6 className="text-uppercase fw-bold text-secondary mb-2">Danh sách sản phẩm</h6>
@@ -52,8 +93,9 @@ export default function DonHangModal({ show, handleClose, orderData }: ModalProp
                             <tr key={index} className="align-middle">
                                 <td className="text-center">{index + 1}</td>
                                 <td>
-                                    <span className="fw-bold text-primary">{item.productName}</span>
-                                    {/* <br/><small className="text-muted">Mã: {item.productId}</small> */}
+                                    <span className="fw-bold">
+                                        {item.product?.productName || "Không có tên sản phẩm"}
+                                    </span>
                                 </td>
                                 <td className="text-center">{item.quantity}</td>
                                 <td className="text-end">{item.price?.toLocaleString()} ₫</td>
@@ -72,6 +114,18 @@ export default function DonHangModal({ show, handleClose, orderData }: ModalProp
                     </tbody>
                     {/* TỔNG TIỀN */}
                     <tfoot>
+                        {/* Nếu có mã giảm giá */}
+                        {orderData.promotion && (
+                            <tr>
+                                <td colSpan={4} className="text-end fw-bold">
+                                    Mã giảm giá ({orderData.promotion.promoCode}):
+                                </td>
+                                <td className="text-end text-success fw-bold">
+                                    -{orderData.discountAmount?.toLocaleString()} ₫
+                                </td>
+                            </tr>
+                        )}
+
                         <tr>
                             <td colSpan={4} className="text-end fw-bold text-uppercase">Tổng cộng:</td>
                             <td className="text-end fw-bold text-danger fs-5">
