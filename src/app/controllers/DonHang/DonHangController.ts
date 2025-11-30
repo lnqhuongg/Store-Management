@@ -46,8 +46,6 @@ export interface IDonHang {
     payments?: IPayments[];
 }
 
-
-
 // 3. Interface Bộ lọc (Chỉ dùng cho Đơn hàng)
 export interface IOrderFilter {
     keyword?: string;
@@ -78,6 +76,25 @@ export interface IPromotion {
     usedCount?: number;
 }
 
+export interface ICreateOrder {
+    customerId: number | null;
+    userId: number | null;
+    promoId: number | null;
+    totalAmount: number | null;
+    discountAmount: number;
+    items: {
+        productId: number;
+        quantity: number;
+        price: number;
+        subtotal: number;
+    }[];
+    payments: {
+        amount: number;
+        paymentMethod: string;
+    }[];
+}
+
+
 // === GET ALL ===
 export async function getAll(page: number = 1, pageSize: number = 5, filter: IOrderFilter = {}) {
     const params = new URLSearchParams();
@@ -105,5 +122,14 @@ export async function getAll(page: number = 1, pageSize: number = 5, filter: IOr
 // === GET BY ID ===
 export async function getById(id: number): Promise<IDonHang> {
     const res = await apiFetch<any>(`/orders/${id}`);
+    return res.dataDTO;
+}
+
+export async function createOrder(dto: ICreateOrder) {
+    const res = await apiFetch<any>('/orders', {
+        method: 'POST',
+        body: JSON.stringify(dto),
+    });
+
     return res.dataDTO;
 }

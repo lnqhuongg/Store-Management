@@ -76,3 +76,8 @@ export async function searchByKeyword(keyword: string) {
   );
   return res?.dataDTO ?? res?.DataDTO ?? res;
 }
+
+export async function getAllActive() {
+  const res = await apiFetch<any>(`/promocodes/active`);
+  return res;
+}

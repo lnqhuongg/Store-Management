@@ -16,6 +16,6 @@ export const adminRoutes: RouteItem[] = [
 ];
 
 export const staffRoutes: RouteItem[] = [
-    { name: 'Danh sách Sản phẩm', path: '/staff/SanPham' },
+    { name: 'Danh sách Sản phẩm', path: '/staff/PointOfSale' },
     { name: 'Danh sách Khách hàng', path: '/staff/KhachHang' },
 ];

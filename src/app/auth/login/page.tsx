@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Authenticate  } from "@/app/controllers/Authentication/AuthenticationController";
+import { Authenticate } from "@/app/controllers/Authentication/AuthenticationController";
 
 export interface Account {
     id: string;
@@ -32,7 +32,7 @@ export default function LoginPage() {
         // Gọi API thật
         const res = await Authenticate({ username, password });
 
-        
+
 
         // Nếu backend trả lỗi
         if (!res.success) {
@@ -48,6 +48,11 @@ export default function LoginPage() {
             setLoginError("Tài khoản đã bị khóa!");
             return;
         }
+
+        localStorage.setItem("user", JSON.stringify({
+            userId: user.userId,
+            username: user.username,
+        }));
 
         // ==== Điều hướng theo role ====
         if (user.role === "admin") {
