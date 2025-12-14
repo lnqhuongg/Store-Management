@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {adminRoutes, staffRoutes} from '@/app/routes/Routes';
+import { adminRoutes, staffRoutes } from '@/app/routes/Routes';
 import { usePathname } from "next/navigation";
 
 
@@ -14,8 +14,18 @@ export default function Sidebar() {
   const currentRoutes = isAdminPage
     ? adminRoutes
     : isStaffPage
-    ? staffRoutes
-    : [];
+      ? staffRoutes
+      : [];
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("pos_cart_v1");
+    localStorage.removeItem("pos_customer_v1");
+    localStorage.removeItem("pos_selected_promo_v1");
+    localStorage.removeItem("pos_use_points_v1");
+    localStorage.removeItem("pos_payment_method_v1");
+    window.location.href = "/auth/login"; // Reload và điều hướng
+  };
 
   return (
     <aside className={`text-white p-4 asideStyle`}>
@@ -32,10 +42,12 @@ export default function Sidebar() {
         ))}
       </ul>
       <div>
-        <Link href="/auth/login"
-          className={`text-white text-end text-decoration-none d-block py-2 px-2 rounded linkStyle`}>
+        <button
+          onClick={handleLogout}
+          className="text-white text-end text-decoration-none d-block py-2 px-2 rounded linkStyle w-100 text-left"
+        >
           Đăng xuất
-        </Link>
+        </button>
       </div>
     </aside>
   );

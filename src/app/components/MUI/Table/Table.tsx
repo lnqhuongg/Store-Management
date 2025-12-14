@@ -1,8 +1,8 @@
 'use client';
 import { Table } from 'react-bootstrap';
 import ButtonEdit from '@/app/components/MUI/Button/ButtonEdit';
+import ButtonDetail from '@/app/components/MUI/Button/ButtonDetail';
 import ButtonDelete from '@/app/components/MUI/Button/ButtonDelete';
-
 
 interface TableComponentProps {
   columns: string[];      // Tên các cột hiển thị
@@ -21,6 +21,7 @@ export default function TableComponent({
   showActions = true,
   onEdit,
   onDelete,
+  onDetail,
 }: TableComponentProps) {
   const getNestedValue = (obj: any, path: string) => {
     return path.split('.').reduce((current, key) => {
@@ -30,21 +31,30 @@ export default function TableComponent({
     }, obj);
   };
   const formatPrice = (price: number | string, currency: string = 'VND'): string => {
-        const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-        
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: currency,
-        }).format(numPrice);
-    };
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: currency,
+    }).format(numPrice);
+  };
   const renderCellValue = (columnName: string, key: string, item: any) => {
     const value = getNestedValue(item, key);
-    
+
     // Kiểm tra nếu cột là "Đơn giá" hoặc key chứa "price"
-    if (columnName.toLowerCase().includes('giá') || key.toLowerCase().includes('price')) {
+    const name = columnName.toLowerCase();
+    const k = key.toLowerCase();
+
+    if (
+      (name.includes('giá') || k.includes('price')) &&
+      !name.includes('mã giảm') && // loại trừ 'mã giảm giá'
+      !k.includes('discount') &&   // loại trừ 'discount'
+      !k.includes('code')          // loại trừ 'code' nếu là discount code
+    ) {
       return formatPrice(value);
     }
-    
+
+
     return value;
   };
 
@@ -63,17 +73,30 @@ export default function TableComponent({
           {/* nếu có data */}
           {data && data.length > 0 ? (
             data.map((item, idx) => (
-
               <tr key={idx}>
                 {dataKeys.map((key, i) => (
-                  <td key={i}>{renderCellValue(columns[i], key, item)}</td>
+                  <td key={i} dangerouslySetInnerHTML={{ __html: renderCellValue(columns[i], key, item) }} />
+
                 ))}
 
-                {/* có hành động thêm / xóa / sửa  */}
+                {/* có hành động thêm / xóa / sửa */}
                 {showActions && (
                   <td>
-                    <ButtonEdit onClick={() => onEdit?.(item)} />  {/* 👈 gọi cha, truyền item */}
-                    <ButtonDelete onClick={() => onDelete?.(item)} />
+
+                    {/* Hiện nút Edit nếu cha truyền vào */}
+                    {onEdit && (
+                      <ButtonEdit onClick={() => onEdit(item)} />
+                    )}
+
+                    {/* Hiện nút Detail nếu cha truyền */}
+                    {onDetail && (
+                      <ButtonDetail onClick={() => onDetail(item)} />
+                    )}
+
+                    {/* Hiện nút Delete nếu cha truyền */}
+                    {onDelete && (
+                      <ButtonDelete onClick={() => onDelete(item)} />
+                    )}
                   </td>
                 )}
               </tr>

@@ -1,158 +1,145 @@
 'use client';
-import { Modal, Form, Button } from 'react-bootstrap';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { Row, Col } from "react-bootstrap";
+import { Modal, Button, Row, Col, Table, Badge } from 'react-bootstrap';
+import { IDonHang } from '@/app/controllers/DonHang/DonHangController';
 
-interface ModalFormProps {
+interface ModalProps {
     show: boolean;
     handleClose: () => void;
-    mode: 'add' | 'edit' | 'detail';     // chế độ: thêm hay sửa
-    DonHangData?: any;           // dữ liệu cũ khi sửa
+    orderData?: IDonHang | null; // Dữ liệu đơn hàng cần xem
 }
 
-export default function ModalForm({ show, handleClose, mode, DonHangData }: ModalFormProps) {
-    const [formData, setFormData] = useState({
-        maDonHang: DonHangData?.id || '',
-        tenKhachHang: DonHangData?.customer || '',
-        nhanVien: DonHangData?.staff || '',
-        maKhuyenMai: DonHangData?.coupon || '',
-        giamGia: DonHangData?.discount || '',
-        tongTien: DonHangData?.total || 0,
-        ngayMua: DonHangData?.date || '',
-    });
-
-    // Nếu là edit thì khi mở modal, nạp sẵn dữ liệu vào form
-    useEffect(() => {
-        if (mode === 'edit' && DonHangData) {
-            setFormData({
-                maDonHang: DonHangData?.id || '',
-                tenKhachHang: DonHangData?.customer || '',
-                nhanVien: DonHangData?.staff || '',
-                maKhuyenMai: DonHangData?.coupon || '',
-                giamGia: DonHangData?.discount || '',
-                tongTien: DonHangData?.total || 0,
-                ngayMua: DonHangData?.date || '',
-            });
-        } else {
-            // reset form khi thêm mới
-            setFormData({
-                maDonHang: '',
-                tenKhachHang: '',
-                nhanVien: '',
-                maKhuyenMai: '',
-                giamGia: '',
-                tongTien: 0,
-                ngayMua: '',
-            });
-        }
-    }, [mode]);
-
-
-    // handle submit xác định nút đó là add hay sửa
-    const handleSubmit = () => {
-        if (mode === "add") {
-            console.log("thêm", formData);
-            // call POST API
-        } else {
-            console.log("sửa", formData);
-            // call PUT API
-        }
-        handleClose();
-    };
+export default function DonHangModal({ show, handleClose, orderData }: ModalProps) {
+    if (!show || !orderData) return null;
 
     return (
-        <Modal show={show} onHide={handleClose} centered size='lg'>
-            <Modal.Header closeButton>
+        <Modal show={show} onHide={handleClose} centered size="lg">
+            <Modal.Header closeButton className="bg-light">
                 <Modal.Title>
-                    {mode === "add" ? "Thêm Đơn hàng" : mode === "edit" ? "Sửa Đơn hàng" : "Xem chi tiết Đơn hàng"}
+                    Chi Tiết Đơn Hàng <span className="text-primary">#{orderData.orderId}</span>
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Row className="mt-3">
-                            <Col md={6}>
-                                <Form.Label>Mã đơn hàng</Form.Label>
-                                <Form.Control type="text" disabled value={DonHangData?.id} />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Label>Khách hàng</Form.Label>
-                                <Form.Select
-                                    disabled={mode === 'detail'}
-                                    onChange={(e) => setFormData({ ...formData, tenKhachHang: e.target.value })}
-                                >
-                                    <option value={formData.tenKhachHang}>{formData.tenKhachHang}</option>
-                                </Form.Select>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Label>Nhân viên</Form.Label>
-                                <Form.Select
-                                    disabled={mode === 'detail'}
-                                    onChange={(e) => setFormData({ ...formData, nhanVien: e.target.value })}
-                                >
-                                    <option value={formData.nhanVien}>{formData.nhanVien}</option>
-                                </Form.Select>
-                            </Col>
-                        </Row>
+                {/* 1. THÔNG TIN CHUNG */}
+                <div className="mb-4 p-3 bg-light rounded border">
+                    <h6 className="text-uppercase fw-bold text-secondary mb-3">Thông tin đơn hàng</h6>
+                    <Row>
+                        <Col md={6}>
+                            <p className="mb-1">
+                                <strong>Khách hàng:</strong> {orderData.customerName || "Khách vãng lai"}
+                            </p>
 
-                        <Row className="mt-3">
-                            <Col md={6}>
-                                <Form.Label>Mã khuyến mãi</Form.Label>
-                                <Form.Select
-                                    disabled={mode === 'detail'}
-                                    onChange={(e) => setFormData({ ...formData, maKhuyenMai: e.target.value })}
-                                >
-                                    <option value={formData.maKhuyenMai}>{formData.maKhuyenMai}</option>
-                                </Form.Select>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Label>Giảm giá</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    disabled
-                                    value={formData.giamGia}
-                                    onChange={(e) => setFormData({ ...formData, giamGia: e.target.value })}
-                                />
-                            </Col>
-                        </Row>
+                            <p className="mb-1">
+                                <strong>Ngày đặt:</strong>
+                                {new Date(orderData.orderDate || "").toLocaleString('vi-VN')}
+                            </p>
+                            {/* PAYMENT METHOD */}
+                            {orderData.payments && orderData.payments.length > 0 && (
+                                <p className="mb-1">
+                                    <strong>Phương thức thanh toán:</strong>{" "}
+                                    {{
+                                        cash: "Tiền mặt",
+                                        "bank_transfer": "Chuyển khoản",
+                                        "e-wallet": "Ví điện tử",
+                                        "card": "Thẻ ngân hàng"
+                                    }[orderData.payments[0].paymentMethod as string] || "Không xác định"}
+                                </p>
+                            )}
+                        </Col>
 
-                        <Row className="mt-3">
-                            <Col md={6}>
-                                <Form.Label>Tổng tiền</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    disabled={mode === 'detail'}
-                                    value={formData.tongTien}
-                                    onChange={(e) => setFormData({ ...formData, tongTien: e.target.value })}
-                                />
-                            </Col>
-                            <Col md={6}>
-                                <Form.Label>Ngày mua</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    disabled={mode === 'detail'}
-                                    onChange={(e) => setFormData({ ...formData, ngayMua: e.target.value })}
-                                    value={formData.ngayMua} />
-                            </Col>
-                        </Row>
+                        <Col md={6} className="text-md-end">
+                            {/* ===== TRẠNG THÁI ĐƠN HÀNG ===== */}
+                            <p className="mb-1">
+                                <strong>Trạng thái:</strong>{" "}
+                                {{
+                                    pending: (
+                                        <span className="badge bg-warning text-dark">Chờ xác nhận</span>
+                                    ),
+                                    paid: (
+                                        <span className="badge bg-success">Đã thanh toán</span>
+                                    ),
+                                    canceled: (
+                                        <span className="badge bg-danger">Đã hủy</span>
+                                    )
+                                }[orderData.status as string] || (
+                                        <span className="badge bg-secondary">Không xác định</span>
+                                    )}
+                            </p>
 
-                    </Form.Group>
+                            {/* ===== NHÂN VIÊN ===== */}
+                            {orderData.userName && (
+                                <p className="mb-1">
+                                    <strong>Nhân viên:</strong> {orderData.userName}
+                                </p>
+                            )}
+                        </Col>
+                    </Row>
+                </div>
 
-                    {/* tui lấy trường này ví dụ cho mng làm cái nút edit chứ thật chất ko có  */}
 
-                    <div className="text-end">
-                        <Button variant="secondary" onClick={handleClose} className="me-2">
-                            Hủy
-                        </Button>
-                        <Button variant="success" type="submit">
-                            {mode === "add" ? "Thêm mới" : "Cập nhật"}
-                        </Button>
-                    </div>
-                </Form>
+                {/* 2. DANH SÁCH SẢN PHẨM */}
+                <h6 className="text-uppercase fw-bold text-secondary mb-2">Danh sách sản phẩm</h6>
+                <Table striped bordered hover responsive size="sm">
+                    <thead className="table-dark text-center">
+                        <tr>
+                            <th style={{ width: '50px' }}>#</th>
+                            <th>Tên sản phẩm</th>
+                            <th style={{ width: '100px' }}>Số lượng</th>
+                            <th style={{ width: '120px' }}>Đơn giá</th>
+                            <th style={{ width: '120px' }}>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {orderData.items?.map((item, index) => (
+                            <tr key={index} className="align-middle">
+                                <td className="text-center">{index + 1}</td>
+                                <td>
+                                    <span className="fw-bold">
+                                        {item.product?.productName || "Không có tên sản phẩm"}
+                                    </span>
+                                </td>
+                                <td className="text-center">{item.quantity}</td>
+                                <td className="text-end">{item.price?.toLocaleString()} ₫</td>
+                                <td className="text-end fw-bold">
+                                    {(item.subtotal || (item.price * item.quantity)).toLocaleString()} ₫
+                                </td>
+                            </tr>
+                        ))}
+                        {(!orderData.items || orderData.items.length === 0) && (
+                            <tr>
+                                <td colSpan={5} className="text-center text-muted fst-italic">
+                                    Không có sản phẩm nào trong đơn này.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                    {/* TỔNG TIỀN */}
+                    <tfoot>
+                        {/* Nếu có mã giảm giá */}
+                        {orderData.promotion && (
+                            <tr>
+                                <td colSpan={4} className="text-end fw-bold">
+                                    Mã giảm giá ({orderData.promotion.promoCode}):
+                                </td>
+                                <td className="text-end text-success fw-bold">
+                                    -{orderData.discountAmount?.toLocaleString()} ₫
+                                </td>
+                            </tr>
+                        )}
+
+                        <tr>
+                            <td colSpan={4} className="text-end fw-bold text-uppercase">Tổng cộng:</td>
+                            <td className="text-end fw-bold text-danger fs-5">
+                                {orderData.totalAmount?.toLocaleString()} ₫
+                            </td>
+                        </tr>
+                    </tfoot>
+                </Table>
             </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>Đóng</Button>
+                {/* Có thể thêm nút In hóa đơn ở đây nếu cần */}
+                <Button variant="primary" onClick={() => window.print()}>In hóa đơn</Button>
+            </Modal.Footer>
         </Modal>
     );
 }

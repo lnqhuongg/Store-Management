@@ -8,11 +8,8 @@ export default function StaffLayout({
 }) {
   return (
     <section className="row">
-      <div className="col-8">
+      <div className="">
         {children}
-      </div>
-      <div className="col-4 bg-light rounded">
-        <InvoicePreview />
       </div>
     </section>
   );

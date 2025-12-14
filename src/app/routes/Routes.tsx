@@ -6,7 +6,7 @@ export interface RouteItem {
 export const adminRoutes: RouteItem[] = [
     { name: 'Quản lý Sản phẩm', path: '/admin/SanPham' },
     { name: 'Quản lý Loại sản phẩm', path: '/admin/LoaiSanPham' },
-    { name: 'Quản lý Nhà cung cấp', path: '/admin/NCC' },
+    { name: 'Quản lý Nhà cung cấp', path: '/admin/NhaCungCap' },
     { name: 'Quản lý Tài khoản nhân viên', path: '/admin/NhanVien' },
     { name: 'Quản lý Thông tin khách hàng', path: '/admin/KhachHang' },
     { name: 'Quản lý Mã giảm giá', path: '/admin/MGG' },
@@ -16,6 +16,6 @@ export const adminRoutes: RouteItem[] = [
 ];
 
 export const staffRoutes: RouteItem[] = [
-    { name: 'Danh sách Sản phẩm', path: '/staff/SanPham' },
+    { name: 'Danh sách Sản phẩm', path: '/staff/PointOfSale' },
     { name: 'Danh sách Khách hàng', path: '/staff/KhachHang' },
 ];

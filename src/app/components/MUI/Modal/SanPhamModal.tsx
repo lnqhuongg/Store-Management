@@ -3,8 +3,8 @@ import { Modal, Form, Button } from 'react-bootstrap';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { stat } from 'fs';
-import { getAllCategories } from '@/app/services/categories/categoryService';
-import { getAllSuppliers } from '@/app/services/suppliers/supplierService';
+import { getAll } from "../../../controllers/LoaiSanPham/LoaiSanPhamController";
+import { getAllSuppliers } from '@/app/controllers/NhaCungCap/NhaCungCapController';
 
 interface ModalFormProps {
     show: boolean;
@@ -38,7 +38,6 @@ interface Product {
   unit: string;
 //   created_at: string;
   imageUrl: File | null;
-  stock: number;
   status: number;
 }
 
@@ -53,7 +52,6 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData,
         unit: 'cái', 
         // created_at: '', 
         imageUrl: null,
-        stock: 0,
         status: 1
     });
     const [categories, setCategories] = useState<Category[]>([]);
@@ -61,20 +59,23 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData,
 
     const fetchCategories = async () => {
         try {
-            const response = await getAllCategories();
-            setCategories(response.dataDTO ?? response);
+            const res = await getAll();
+            setCategories(res.data || []);
         } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
-    };
+            console.error("Error fetching categories:", error);
+            setCategories([]);
+        } 
+    }
+
     const fetchSuppliers = async () => {
         try {
-            const response = await getAllSuppliers();   
-            setSuppliers(response.dataDTO || response);
+            const res = await getAllSuppliers();
+            setSuppliers(res.dataDTO ?? res);
         } catch (error) {
-            console.error('Error fetching suppliers:', error);
-        }   
-    };
+            console.error("Error fetching suppliers:", error);
+            setSuppliers([]);
+        }
+    }
     useEffect(() => {
         fetchCategories();
         fetchSuppliers();
@@ -97,7 +98,6 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData,
                 unit: 'cái', 
                 // created_at: '', 
                 imageUrl: null,
-                stock: 0,
                 status: 1
                     });
         }
@@ -115,7 +115,6 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData,
             unit: '', 
             // created_at: '', 
             imageUrl: null,
-            stock: 0,
             status: 1
         });
     }
@@ -134,7 +133,6 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData,
             formDataToSubmit.append('Price', formData.price.toString());
             formDataToSubmit.append('Unit', formData.unit);
             formDataToSubmit.append('Status', formData.status.toString());
-            formDataToSubmit.append('Stock', formData.stock.toString());
             
             // Thêm categoryID và supplierID nếu có
             if (formData.categoryID && formData.categoryID > 0) {
@@ -383,8 +381,9 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData,
                                 <Form.Group className='mb-3'>
                                     <Form.Label>Số lượng tồn</Form.Label>
                                     <Form.Control type='number' 
-                                        value={formData.stock} 
-                                        onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
+                                        value={SanPhamData.stock} 
+                                        // onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) || 0 })}
+                                        readOnly
                                     />
                                 </Form.Group>
                             )}
@@ -425,9 +424,10 @@ export default function SanPhamModalForm({ show, handleClose, mode, SanPhamData,
                                 <Form.Group className='mb-3'>
                                     <Form.Label>Barcode</Form.Label>
                                     <Form.Control type='text' 
-                                        disabled
+                                        // disabled
+                                        readOnly
                                         value={formData.barcode} 
-                                        onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                                        // onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
                                     />
                                 </Form.Group>
                             ) }

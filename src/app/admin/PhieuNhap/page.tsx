@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getAll, PhieuNhapFilter, IPhieuNhap } from "@/app/controllers/PhieuNhap/PhieuNhapController";
-import TableComponent from "@/app/components/MUI/Table/TablePhieuNhap";
+import TableComponent from "@/app/components/MUI/Table/Table";
 import PaginationComponent from "@/app/components/Pagination/Pagination";
 import { Alert } from "react-bootstrap";
 import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
@@ -162,7 +162,6 @@ export default function PhieuNhapPage() {
                     staffName: item.staff?.fullName,
                     importDate: item.importDate.replace("T", " "),
                 }))}
-                onDelete={handleDelete}
                 onDetail={handleDetail}
             />
 

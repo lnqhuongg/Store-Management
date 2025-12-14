@@ -1,5 +1,5 @@
 // lib/api.ts
-const API_URL = 'http://localhost:5224/api'; // địa chỉ backend của mình  
+const API_URL = 'https://localhost:7107/api'; // địa chỉ backend của mình  
 
 // tạo 1 hàm để fetch kiểu dữ liệu truyền vào là T (kiểu gì cũng được)
 export async function apiFetch<T>(
@@ -30,9 +30,9 @@ export async function apiFetch<T>(
     }
 
     // trả lỗi khác ngoài Ok (200) (tựa bên backend)
-    if (!res.ok) {
-        throw new Error(data.message || data.error || 'Lỗi server');
-    }
+    // if (!res.ok) {
+    //     throw new Error(data.message || data.error || 'Lỗi server');
+    // }
 
     return data as T;
 }

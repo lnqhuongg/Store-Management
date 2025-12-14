@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import ButtonAdd from "@/app/components/MUI/Button/ButtonAdd";
 import SearchInput from "@/app/components/MUI/Input/SearchInput";
@@ -7,79 +7,146 @@ import TableComponent from "@/app/components/MUI/Table/Table";
 import PaginationComponent from "@/app/components/Pagination/Pagination";
 import NhanVienModal from "@/app/components/MUI/Modal/NhanVienModal";
 
-export default function NhanVien() {
-    const columns = ['ID Nhân viên', 'Tên nhân viên', 'Email', 'Chức vụ', 'Trạng thái'];
-    const dataKeys = ['id', 'tenNhanVien', 'email', 'chucVu', 'trangThai'];
+import { getAll, getById, create, update } from '@/app/controllers/NhanVien/NhanVienController';
+import { NhanVienFilter } from '@/app/controllers/NhanVien/NhanVienController';
 
-    const [data, setData] = useState([
-        { id: 1, tenNhanVien: 'Nguyễn Văn A', email: 'nguyenvana@example.com', chucVu: 'Quản lý', trangThai: 'Đang làm việc' },
-        { id: 2, tenNhanVien: 'Trần Thị B', email: 'tranthib@example.com', chucVu: 'Nhân viên', trangThai: 'Đã nghỉ việc' },
-    ]);
+export default function NhanVienPage() {
+    const columns = ['ID', 'Tên đăng nhập', 'Họ tên', 'Vai trò', 'Trạng thái'];
+    const dataKeys = ['userId', 'username', 'fullName', 'role', 'status'];
+
+    const [data, setData] = useState<any[]>([]);
+    const [keyword, setKeyword] = useState<string>("");
+    const [roleFilter, setRoleFilter] = useState<'admin' | 'staff' | ''>('');
 
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 5;
-    const totalPages = Math.ceil(data.length / pageSize);
-    const pagedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const [totalPages, setTotalPages] = useState(1);
 
     const [showModal, setShowModal] = useState(false);
     const [mode, setMode] = useState<'add' | 'edit'>('add');
-    const [selectedNhanVien, setSelectedNhanVien] = useState<
-        { id: number; tenNhanVien: string; email: string; chucVu: string; trangThai: string } | undefined
-    >(undefined);
+    const [selectedItem, setSelectedItem] = useState<any>(null);
+
+    const loadData = async () => {
+        try {
+            const filter: NhanVienFilter = { keyword };
+            if (roleFilter) filter.role = roleFilter;
+
+            const result = await getAll(currentPage, 5, filter);
+
+            const formattedData = result.data.map((item: any) => ({
+                ...item,
+
+                role:
+                    item.role === "admin"
+                        ? '<span className="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800"> Quản trị </span>'
+                        : '<span className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800"> Nhân viên </span>',
+                status: item.status === 1
+                    ? '<span class="badge bg-success">Hoạt động</span>'
+                    : item.status === 0
+                        ? '<span class="badge bg-secondary">Tạm ngưng</span>'
+                        : '<span class="badge bg-secondary">Không xác định</span>'
+            }));
+
+            setData(formattedData);
+            setTotalPages(result.pagination.totalPages || 1);
+        } catch (err: any) {
+            alert(err.message || 'Lỗi tải danh sách nhân viên!');
+        }
+    };
+
+    useEffect(() => {
+        loadData();
+    }, [currentPage, keyword, roleFilter]);
 
     const handleAdd = () => {
         setMode('add');
-        setSelectedNhanVien(undefined); // Sử dụng undefined thay vì null
+        setSelectedItem(null);
         setShowModal(true);
     };
 
-    const handleEdit = (nhanVien: any) => {
-        setMode('edit');
-        setSelectedNhanVien(nhanVien);
-        setShowModal(true);
-    };
-
-    const handleSubmit = (formData: any) => {
-        if (mode === 'add') {
-            setData((prev) => [...prev, formData]);
-        } else {
-            setData((prev) =>
-                prev.map((item) => (item.id === formData.id ? formData : item))
-            );
+    const handleEdit = async (item: any) => {
+        try {
+            const detail = await getById(item.userId);
+            setMode('edit');
+            setSelectedItem(detail);
+            setShowModal(true);
+        } catch (err: any) {
+            alert(err.message || 'Không tải được thông tin nhân viên!');
         }
+    };
+
+    const handleSave = async (formData: any) => {
+        try {
+            if (mode === 'add') {
+                await create(formData as any);
+                alert("Thêm nhân viên thành công!");
+            } else {
+                if (!selectedItem?.userId) throw new Error("Không tìm thấy ID nhân viên");
+                await update(selectedItem.userId, {
+                    username: formData.username.trim(),
+                    fullName: formData.fullName.trim(),
+                    role: formData.role,
+                    status: formData.status
+                });
+                alert("Cập nhật nhân viên thành công!");
+            }
+            await loadData();
+            setShowModal(false);
+        } catch (err: any) {
+            alert(err.message || 'Lỗi khi lưu nhân viên!');
+        }
+    };
+
+    const handleDelete = async (item: any) => {
+        if (!confirm(`Xóa nhân viên "${item.fullName}"?`)) return;
+        alert("Xóa thành công! (Backend chưa hỗ trợ)");
     };
 
     return (
         <section>
-            <h4>Quản lý Nhân viên</h4>
-            <div className="nhanvien py-4">
-                <div>
+            <h4 className="mb-4">Quản lý Nhân viên</h4>
+
+            <div className="py-4">
+                {/* DÒNG 1: Nút Thêm + Lọc role (chung 1 hàng) */}
+                <div className="d-flex justify-content-start gap-3 align-items-center mb-3">
                     <ButtonAdd onClick={handleAdd} />
+                    <div className="w-40">
+                        <select
+                            className="form-select"
+                            value={roleFilter}
+                            onChange={(e) => {
+                                setRoleFilter(e.target.value as 'admin' | 'staff' | '');
+                                setCurrentPage(1);
+                            }}
+                        >
+                            <option value="">Tất cả vai trò</option>
+                            <option value="admin">Quản trị viên</option>
+                            <option value="staff">Nhân viên</option>
+                        </select>
+                    </div>
                 </div>
+
+                {/* DÒNG 2: Thanh tìm kiếm - GIỐNG HỆT LOAISANPHAM */}
                 <div>
-                    <SearchInput />
+                    <SearchInput
+                        onSearch={(value) => {
+                            setKeyword(value);
+                            setCurrentPage(1);
+                        }}
+                    />
                 </div>
+
+                {/* DÒNG 3: Bảng */}
                 <div>
                     <TableComponent
                         columns={columns}
                         dataKeys={dataKeys}
-                        data={pagedData.map((item) => ({
-                            ...item,
-                            trangThai: (
-                                <span
-                                    className={
-                                        item.trangThai === 'Đang làm việc'
-                                            ? 'badge bg-success'
-                                            : 'badge bg-secondary'
-                                    }
-                                >
-                                    {item.trangThai}
-                                </span>
-                            ),
-                        }))}
-                        onEdit={(item) => handleEdit(item)} // Chỉ giữ nút chỉnh sửa
+                        data={data}
+                        onEdit={handleEdit}
+                    // onDelete={handleDelete}
                     />
                 </div>
+
+                {/* DÒNG 4: Phân trang */}
                 <div>
                     <PaginationComponent
                         currentPage={currentPage}
@@ -88,12 +155,13 @@ export default function NhanVien() {
                     />
                 </div>
             </div>
+
             <NhanVienModal
                 show={showModal}
                 handleClose={() => setShowModal(false)}
                 mode={mode}
-                nhanVienData={selectedNhanVien}
-                onSubmit={handleSubmit}
+                nhanVienData={selectedItem}
+                onSave={handleSave}
             />
         </section>
     );

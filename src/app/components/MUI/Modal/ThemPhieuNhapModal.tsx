@@ -1,10 +1,11 @@
 'use client';
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import { getAllSuppliers } from "@/app/services/suppliers/supplierService";
-import { getAllProducts, filterBySupplier } from "@/app/services/products/productsService";
+import { getAllSuppliers } from "@/app/controllers/NhaCungCap/NhaCungCapController";
+import { getAllSP, filterBySupplier } from "@/app/controllers/SanPham/SanPhamControllers";
 import { create as createPhieuNhap } from "@/app/controllers/PhieuNhap/PhieuNhapController";
 
+// getAllProducts
 interface ModalAddFormProps {
     show: boolean;
     handleClose: () => void;
@@ -50,7 +51,7 @@ export default function ThemPhieuNhapModal({ show, handleClose }: ModalAddFormPr
         }
         fetchSuppliers();
         async function fetchProducts() {
-            const res = await getAllProducts();
+            const res = await getAllSP();
             setProductList(res.dataDTO || []);
         }
         fetchProducts();

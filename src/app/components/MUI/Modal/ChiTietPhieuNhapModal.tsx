@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
-import { getAllSuppliers } from "@/app/services/suppliers/supplierService";
+import { getAllSuppliers } from "@/app/controllers/NhaCungCap/NhaCungCapController";
 
 interface ModalFormProps {
     show: boolean;
