@@ -63,7 +63,7 @@ export async function deleteItem(id: number): Promise<void> {
 
 export async function getAllSuppliers() {
     try {
-        const response = await fetch('https://localhost:7107/api/suppliers/getAllNCC');
+        const response = await fetch('http://localhost:5224/api/suppliers/getAllNCC');
         const data = await response.json();
         return data;
     } catch (error) {

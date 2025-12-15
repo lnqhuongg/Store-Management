@@ -3,10 +3,9 @@
 import Link from 'next/link';
 import { adminRoutes, staffRoutes } from '@/app/routes/Routes';
 import { usePathname } from "next/navigation";
-
+import './Sidebar.css'; // Import file CSS vừa tạo
 
 export default function Sidebar() {
-
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith("/admin");
   const isStaffPage = pathname.startsWith("/staff");
@@ -18,34 +17,55 @@ export default function Sidebar() {
       : [];
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("pos_cart_v1");
-    localStorage.removeItem("pos_customer_v1");
-    localStorage.removeItem("pos_selected_promo_v1");
-    localStorage.removeItem("pos_use_points_v1");
-    localStorage.removeItem("pos_payment_method_v1");
-    window.location.href = "/auth/login"; // Reload và điều hướng
+    // Xóa hết data liên quan phiên làm việc
+    const keysToRemove = [
+      "user", "pos_cart_v1", "pos_customer_v1", 
+      "pos_selected_promo_v1", "pos_use_points_v1", "pos_payment_method_v1"
+    ];
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+    
+    window.location.href = "/auth/login"; 
   };
 
   return (
-    <aside className={`text-white p-4 asideStyle`}>
-      <h5 className="mb-4">{isAdminPage ? "Trang Quản trị viên" : "Trang Nhân viên"}</h5>
-      <ul className="list-styled">
-        {currentRoutes.map((item) => (
-          <li key={item.path} className="mb-2">
-            <Link
-              href={item.path}
-              className={`text-white text-decoration-none d-block py-2 px-2 rounded linkStyle`}>
-              {item.name}
-            </Link>
-          </li>
-        ))}
+    // Thêm class 'd-flex flex-column' của Bootstrap hoặc dùng CSS thuần đã viết
+    <aside className="asideStyle">
+      
+      {/* Header Sidebar */}
+      <h5 className="sidebar-title mt-2">
+        {isAdminPage ? "Quản Trị Viên" : "Nhân Viên"}
+      </h5>
+
+      {/* Danh sách Menu */}
+      <ul className="sidebar-list">
+        {currentRoutes.map((item) => {
+          // Logic kiểm tra link active
+          const isActive = pathname === item.path;
+          
+          return (
+            <li key={item.path}>
+              <Link
+                href={item.path}
+                className={`text-decoration-none linkStyle ${isActive ? 'active' : ''}`}
+              >
+                {/* Nếu bạn có icon trong object routes thì render ở đây: <span>{item.icon}</span> */}
+                <span>{item.name}</span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
-      <div>
+
+      {/* Footer Sidebar (Logout) */}
+      <div className="logout-btn">
         <button
           onClick={handleLogout}
-          className="text-white text-end text-decoration-none d-block py-2 px-2 rounded linkStyle w-100 text-left"
+          className="btn border-0 w-100 linkStyle logout-link"
         >
+          {/* Icon Logout đơn giản (SVG) */}
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{marginRight: 8}}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
           Đăng xuất
         </button>
       </div>

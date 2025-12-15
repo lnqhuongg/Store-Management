@@ -31,18 +31,30 @@ export default function ThemPhieuNhapModal({ show, handleClose }: ModalAddFormPr
     const [listSelectProducts, setListSelectProducts] = useState<any[]>([]); // danh sach san pham da chon de them vao chi tiet phieu nhap
     useEffect(() => {
         if (!show) {
-            // Khi modal đóng -> reset dữ liệu
+            // Khi modal ĐÓNG -> reset dữ liệu
             setListSelectProducts([]);
             setSelectedProduct(null);
+            // Không cần set selectedSupplier về null nếu muốn giữ cache, 
+            // nhưng cần reset form để tránh conflict
             setFormData({
-                supplierName: '',
+                supplierName: '', 
                 quantity: 1,
                 price: 1,
                 totalAmount: 0,
             });
+        } else {
+            // Khi modal MỞ -> Kiểm tra xem đã có danh sách NCC chưa
+            // Nếu có thì chọn ngay NCC đầu tiên làm mặc định
+            if (supplierList.length > 0) {
+                const firstSupplier = supplierList[0];
+                setSelectedSupplier(firstSupplier);
+                setFormData(prev => ({
+                    ...prev,
+                    supplierName: firstSupplier.name // Quan trọng: Gán tên để trigger fetch sản phẩm
+                }));
+            }
         }
-    }, [show]);
-
+    }, [show, supplierList]); // Thêm supplierList vào dependency
 
     useEffect(() => {
         async function fetchSuppliers() {
@@ -70,20 +82,31 @@ export default function ThemPhieuNhapModal({ show, handleClose }: ModalAddFormPr
         }
     }, [supplierList]);
 
-
     useEffect(() => {
         async function fetchProductsBySupplier() {
-            if (formData.supplierName) {
-                const selectedSupplier = supplierList.find(s => s.name === formData.supplierName);
-                if (selectedSupplier) {
-                    const res = await filterBySupplier(selectedSupplier.supplierId);
-                    console.log("Products by supplier fetched: ", res.dataDTO);
-                    setProductList(res.dataDTO || []);
+            if (formData.supplierName && supplierList.length > 0) {
+                const selected = supplierList.find(s => s.name === formData.supplierName);
+                if (selected) {
+                    // Cập nhật state selectedSupplier để đồng bộ
+                    setSelectedSupplier(selected); 
+                    
+                    const res = await filterBySupplier(selected.supplierId);
+                    // console.log("Products fetched:", res.dataDTO);
+                    
+                    const products = res.dataDTO || [];
+                    setProductList(products);
+                    
+                    // Tự động chọn sản phẩm đầu tiên của danh sách mới tải về
+                    if (products.length > 0) {
+                        setSelectedProduct(products[0]);
+                    } else {
+                        setSelectedProduct(null);
+                    }
                 }
             }
         }
         fetchProductsBySupplier();
-    }, [formData.supplierName]);
+    }, [formData.supplierName, supplierList]); // Thêm supplierList để an toàn
 
     const handleRemoveProduct = (index: number) => {
         const newList = [...listSelectProducts];
@@ -246,6 +269,7 @@ export default function ThemPhieuNhapModal({ show, handleClose }: ModalAddFormPr
                                             const sp = supplierList.find(s => s.name === e.target.value);
                                             setFormData({ ...formData, supplierName: e.target.value });
                                             setSelectedSupplier(sp);
+                                            setListSelectProducts([]); // reset danh sach san pham da chon
                                         }}
                                     >
                                         {supplierList.length > 0 && supplierList.map((supplier: any) => (

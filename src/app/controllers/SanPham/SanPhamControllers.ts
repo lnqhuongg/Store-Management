@@ -1,7 +1,8 @@
 'use client';
+const API_URL = 'http://localhost:5224/api/products';
 export async function getListProducts() {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/list`);
+        const response = await fetch(`${API_URL}/list`);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -11,7 +12,7 @@ export async function getListProducts() {
 }
 export async function getAllProducts(page: number, pageSize: number, keyword: string, order: string, categoryID: string, supplierID: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products?page=${page}&pageSize=${pageSize}&keyword=${keyword}&order=${order}&category_id=${categoryID}&supplier_id=${supplierID}`);
+        const response = await fetch(`${API_URL}?page=${page}&pageSize=${pageSize}&keyword=${keyword}&order=${order}&category_id=${categoryID}&supplier_id=${supplierID}`);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -22,7 +23,7 @@ export async function getAllProducts(page: number, pageSize: number, keyword: st
 
 export async function getAllSP() {
     try {
-        const response = await fetch(`https://localhost:7107/api/products`);
+        const response = await fetch(`${API_URL}`);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -33,7 +34,7 @@ export async function getAllSP() {
 
 export async function getProductById(id: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/${id}`);
+        const response = await fetch(`${API_URL}/${id}`);
         const data = await response.json();
         return data;
     } catch (error) {
@@ -43,7 +44,7 @@ export async function getProductById(id: string) {
 }
 export async function getStockByProductId(id: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/getStock/${id}`);
+        const response = await fetch(`${API_URL}/getStock/${id}`);
         if(response.status === 404) {
             return { dataDTO: { quantity: 0 } }; // Trả về stock = 0 nếu không tìm thấy sản phẩm
         }
@@ -56,7 +57,7 @@ export async function getStockByProductId(id: string) {
 }
 export async function createProductRequest(product: FormData) {
     try {
-        const response = await fetch('https://localhost:7107/api/products', {
+        const response = await fetch('${API_URL}', {
             method: 'POST',
             // headers: { 'Content-Type': 'application/json' },
             body: product,
@@ -82,7 +83,7 @@ export async function createProductRequest(product: FormData) {
 }
 export async function updateProductRequest(id: string, product: FormData) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/${id}`, {
+        const response = await fetch(`${API_URL}/${id}`, {
             method: 'PUT',
             // headers: { 'Content-Type': 'application/json' },
             body: product,
@@ -103,7 +104,7 @@ export async function updateProductRequest(id: string, product: FormData) {
 }
 export async function deleteProduct(id: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/${id}`, {
+        const response = await fetch(`${API_URL}/${id}`, {
             method: 'DELETE',
         }); 
         if (!response.ok) {
@@ -117,7 +118,7 @@ export async function deleteProduct(id: string) {
 }
 export async function searchByCategoryIDAndSortOrderAndKeyword(category_id: string, sortOrder: string, keyword: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/search?category_id=${category_id}&order=${sortOrder}&keyword=${keyword}`, {
+        const response = await fetch(`${API_URL}/search?category_id=${category_id}&order=${sortOrder}&keyword=${keyword}`, {
             method: 'GET',
         }); 
         if(response.status === 204) {
@@ -133,7 +134,7 @@ export async function searchByCategoryIDAndSortOrderAndKeyword(category_id: stri
 
 export async function filterByCategory(categoryID: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/category/${categoryID}`, {
+        const response = await fetch(`${API_URL}/category/${categoryID}`, {
             method: 'GET',
         }); 
         const data = await response.json();
@@ -145,7 +146,7 @@ export async function filterByCategory(categoryID: string) {
 }
 export async function filterBySupplier(supplierID: string) {
     try {
-        const response = await fetch(`https://localhost:7107/api/products/supplier/${supplierID}`, {
+        const response = await fetch(`${API_URL}/supplier/${supplierID}`, {
             method: 'GET',
         }); 
         const data = await response.json();

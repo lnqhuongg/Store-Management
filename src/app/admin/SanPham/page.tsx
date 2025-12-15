@@ -12,7 +12,7 @@ import styleBtn from "../../components/MUI/styleMaterials.module.css"
 import searchIcon from "../../../../public/icons/loupe.png";
 
 // import styleSP from "./SanPham.module.css"
-import styleSP from "../../staff/SanPham/SanPham.module.css";
+import styleSP from "../../components/StaffComponents/SanPham/SanPham.module.css";
 
 import Image from "next/image";
 import SearchInputProducts from "@/app/components/MUI/Input/SearchInputProducts";
