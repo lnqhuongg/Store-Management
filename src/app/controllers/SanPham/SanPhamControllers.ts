@@ -57,7 +57,7 @@ export async function getStockByProductId(id: string) {
 }
 export async function createProductRequest(product: FormData) {
     try {
-        const response = await fetch('${API_URL}', {
+        const response = await fetch(`${API_URL}`, {
             method: 'POST',
             // headers: { 'Content-Type': 'application/json' },
             body: product,
