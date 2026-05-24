@@ -32,9 +32,3 @@ npm run dev
 Mở trình duyệt và truy cập `http://localhost:3000`
 
 > ⚠️ Đảm bảo Backend đang chạy trước khi khởi động Frontend.
-
----
-
-## 📸 Screenshots
-
-*(Cập nhật sau)*
