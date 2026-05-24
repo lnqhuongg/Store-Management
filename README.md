@@ -1,36 +1,40 @@
-This is a [https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip) project bootstrapped with [`create-next-app`](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip).
+# 🛍️ Store Management — Frontend
 
-## Getting Started
+Source code giao diện hệ thống quản lý cửa hàng và bán hàng tại quầy (POS), hỗ trợ quản lý sản phẩm, đơn hàng, phiếu nhập và danh mục sản phẩm.
 
-First, run the development server:
+> 🔗 Backend Repository: [StoreManagementBE_ASP.NET](https://github.com/lnqhuongg/StoreManagementBE_ASP.NET)
+
+---
+
+## 🚀 Tech Stack
+
+- **Framework:** Next.js 15
+- **Styling:** Tailwind CSS, Bootstrap
+
+---
+
+## ⚙️ Cài đặt & Chạy project
 
 ```bash
+# 1. Clone repository
+git clone https://github.com/lnqhuongg/Store-Management.git
+
+# 2. Di chuyển vào thư mục project
+cd Store-Management
+
+# 3. Cài đặt dependencies
+npm install
+
+# 4. Chạy ở môi trường development
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Mở trình duyệt và truy cập `http://localhost:3000`
 
-You can start editing the page by modifying `https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip`. The page auto-updates as you edit the file.
+> ⚠️ Đảm bảo Backend đang chạy trước khi khởi động Frontend.
 
-This project uses [`next/font`](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip) to automatically optimize and load [Geist](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip), a new font family for Vercel.
+---
 
-## Learn More
+## 📸 Screenshots
 
-To learn more about https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip, take a look at the following resources:
-
-- [https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip Documentation](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip) - learn about https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip features and API.
-- [Learn https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip) - an interactive https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip tutorial.
-
-You can check out [the https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip GitHub repository](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip app is to use the [Vercel Platform](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip) from the creators of https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip
-
-Check out our [https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip deployment documentation](https://raw.githubusercontent.com/0258hahung/Store-Management/main/src/app/components/Sidebar/Store-Management-2.5-beta.3.zip) for more details.
+*(Cập nhật sau)*
